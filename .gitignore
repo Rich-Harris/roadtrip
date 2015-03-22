@@ -1,0 +1,4 @@
+.*
+!.gitignore
+demo
+node_modules

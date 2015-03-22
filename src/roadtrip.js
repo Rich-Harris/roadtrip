@@ -36,6 +36,12 @@ Roadtrip.prototype = {
 		let i, len = this.routes.length;
 		let newRoute, data;
 
+		let target = this._target = { href, options };
+
+		if ( this.isTransitioning ) {
+			return;
+		}
+
 		for ( i = 0; i < len; i += 1 ) {
 			let route = this.routes[i];
 			data = route.exec( href );
@@ -49,10 +55,24 @@ Roadtrip.prototype = {
 		// TODO handle changes to query string/hashbang
 		if ( !newRoute || newRoute === this.currentRoute ) return;
 
+		this.isTransitioning = true;
+
+		this.currentRoute.leave( this.currentData)
+
 		roadtrip.Promise.all([
 			this.currentRoute.leave( this.currentData, data ),
 			newRoute.beforeEnter( data, this.currentData )
-		]).then( () => newRoute.enter( data, this.currentData ) );
+		])
+			.then( () => newRoute.enter( data, this.currentData ) )
+			.then( () => {
+				this.isTransitioning = false;
+
+				// if the user navigated while the transition was taking
+				// place, we need to do it all again
+				if ( this._target !== target ) {
+					this.goto( this._target.href, this._target.options );
+				}
+			});
 
 		this.currentRoute = newRoute;
 		this.currentData = data;

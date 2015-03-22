@@ -19,7 +19,7 @@ function RouteData ({ route, pathname, params, query, isInitial }) {
 
 RouteData.prototype = {
 	matches ( href ) {
-		return this._route.exec( href, true );
+		return this._route.matches( href );
 	}
 }
 
@@ -52,7 +52,16 @@ export default function Route ( path, options ) {
 }
 
 Route.prototype = {
-	exec ( href, matchOnly ) {
+	matches ( href ) {
+		a.href = href;
+
+		let pathname = a.pathname.slice( 1 );
+		let segments = pathname.split( '/' );
+
+		return segmentsMatch( segments, this.segments );
+	},
+
+	exec ( href ) {
 		a.href = href;
 
 		let pathname = a.pathname.slice( 1 );
@@ -78,8 +87,6 @@ Route.prototype = {
 				return false;
 			}
 		}
-
-		if ( matchOnly ) return true;
 
 		let query = {};
 		let queryPairs = search.split( '&' );
@@ -107,3 +114,12 @@ Route.prototype = {
 		return new RouteData({ route: this, pathname, params, query, isInitial });
 	}
 };
+
+function segmentsMatch ( a, b ) {
+	if ( a.length !== b.length ) return;
+
+	let i = a.length;
+	while ( i-- ) {
+		return b[0] === ':' || a === b;
+	}
+}

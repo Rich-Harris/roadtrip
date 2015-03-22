@@ -29,7 +29,7 @@
 
 	RouteData.prototype = {
 		matches: function (href) {
-			return this._route.exec(href, true);
+			return this._route.matches(href);
 		}
 	};
 	function Route(path, options) {
@@ -63,7 +63,16 @@
 	}
 
 	Route.prototype = {
-		exec: function (href, matchOnly) {
+		matches: function (href) {
+			a.href = href;
+
+			var pathname = a.pathname.slice(1);
+			var segments = pathname.split("/");
+
+			return segmentsMatch(segments, this.segments);
+		},
+
+		exec: function (href) {
 			a.href = href;
 
 			var pathname = a.pathname.slice(1);
@@ -88,8 +97,6 @@
 					return false;
 				}
 			}
-
-			if (matchOnly) return true;
 
 			var query = {};
 			var queryPairs = search.split("&");
@@ -116,6 +123,15 @@
 			return new RouteData({ route: this, pathname: pathname, params: params, query: query, isInitial: isInitial });
 		}
 	};
+
+	function segmentsMatch(a, b) {
+		if (a.length !== b.length) return;
+
+		var i = a.length;
+		while (i--) {
+			return b[0] === ":" || a === b;
+		}
+	}
 
 	// Adapted from https://github.com/visionmedia/page.js
 	// MIT license https://github.com/visionmedia/page.js#license
@@ -240,6 +256,12 @@
 			var newRoute = undefined,
 			    data = undefined;
 
+			var target = this._target = { href: href, options: options };
+
+			if (this.isTransitioning) {
+				return;
+			}
+
 			for (i = 0; i < len; i += 1) {
 				var route = this.routes[i];
 				data = route.exec(href);
@@ -253,8 +275,20 @@
 			// TODO handle changes to query string/hashbang
 			if (!newRoute || newRoute === this.currentRoute) return;
 
+			this.isTransitioning = true;
+
+			this.currentRoute.leave(this.currentData);
+
 			roadtrip.Promise.all([this.currentRoute.leave(this.currentData, data), newRoute.beforeEnter(data, this.currentData)]).then(function () {
 				return newRoute.enter(data, _this.currentData);
+			}).then(function () {
+				_this.isTransitioning = false;
+
+				// if the user navigated while the transition was taking
+				// place, we need to do it all again
+				if (_this._target !== target) {
+					_this.goto(_this._target.href, _this._target.options);
+				}
 			});
 
 			this.currentRoute = newRoute;

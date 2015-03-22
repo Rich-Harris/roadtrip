@@ -84,7 +84,7 @@ roadtrip
     }
   })
 
-  // Calling roadtrip.start() navigates to the initial route
+  // Calling roadtrip.start() activates the current route
   .start();
 ```
 

@@ -53,8 +53,8 @@
 			_this[handler] = function (route, other) {
 				var value = undefined;
 
-				if (options.enter) {
-					value = options.enter(route, from);
+				if (options[handler]) {
+					value = options[handler](route, other);
 				}
 
 				return roadtrip.Promise.resolve(value);
@@ -132,6 +132,7 @@
 			return b[0] === ":" || a === b;
 		}
 	}
+	//# sourceMappingURL=/www/roadtrip/.gobble-build/01-babel/1/Route.js.01-babel.map
 
 	// Adapted from https://github.com/visionmedia/page.js
 	// MIT license https://github.com/visionmedia/page.js#license
@@ -207,6 +208,7 @@
 
 		return href && href.indexOf(origin) === 0;
 	}
+	//# sourceMappingURL=/www/roadtrip/.gobble-build/01-babel/1/utils/watchLinks.js.01-babel.map
 
 	var roadtrip__location = window.history.location || window.location;
 
@@ -277,9 +279,7 @@
 
 			this.isTransitioning = true;
 
-			this.currentRoute.leave(this.currentData);
-
-			roadtrip.Promise.all([this.currentRoute.leave(this.currentData, data), newRoute.beforeEnter(data, this.currentData)]).then(function () {
+			roadtrip.Promise.all([this.currentRoute.leave(this.currentData, data), newRoute.beforeenter(data, this.currentData)]).then(function () {
 				return newRoute.enter(data, _this.currentData);
 			}).then(function () {
 				_this.isTransitioning = false;
@@ -287,6 +287,7 @@
 				// if the user navigated while the transition was taking
 				// place, we need to do it all again
 				if (_this._target !== target) {
+					console.log("route changed midflight");
 					_this.goto(_this._target.href, _this._target.options);
 				}
 			});
@@ -301,6 +302,10 @@
 	var roadtrip = new Roadtrip();
 	roadtrip.Promise = window.Promise;
 
+
+	//# sourceMappingURL=/www/roadtrip/.gobble-build/01-babel/1/roadtrip.js.01-babel.map
+
 	return roadtrip;
 
 }));
+//# sourceMappingURL=roadtrip.js.map

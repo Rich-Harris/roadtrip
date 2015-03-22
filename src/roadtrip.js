@@ -57,11 +57,9 @@ Roadtrip.prototype = {
 
 		this.isTransitioning = true;
 
-		this.currentRoute.leave( this.currentData)
-
 		roadtrip.Promise.all([
 			this.currentRoute.leave( this.currentData, data ),
-			newRoute.beforeEnter( data, this.currentData )
+			newRoute.beforeenter( data, this.currentData )
 		])
 			.then( () => newRoute.enter( data, this.currentData ) )
 			.then( () => {
@@ -70,6 +68,7 @@ Roadtrip.prototype = {
 				// if the user navigated while the transition was taking
 				// place, we need to do it all again
 				if ( this._target !== target ) {
+					console.log( 'route changed midflight' );
 					this.goto( this._target.href, this._target.options );
 				}
 			});

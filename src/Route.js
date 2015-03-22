@@ -42,8 +42,8 @@ export default function Route ( path, options ) {
 		this[ handler ] = ( route, other ) => {
 			let value;
 
-			if ( options.enter ) {
-				value = options.enter( route, from );
+			if ( options[ handler ] ) {
+				value = options[ handler ]( route, other );
 			}
 
 			return roadtrip.Promise.resolve( value );

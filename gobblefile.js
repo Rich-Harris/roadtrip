@@ -15,15 +15,14 @@ var babelWhitelist = [
 
 lib = gobble( 'src' )
 	.transform( 'babel', {
-		whitelist: babelWhitelist,
-		sourceMap: false
+		whitelist: babelWhitelist
 	})
 	.transform( 'esperanto-bundle', {
 		entry: 'roadtrip',
 		type: 'umd',
-		name: 'roadtrip',
-		sourceMap: false
-	});
+		name: 'roadtrip'
+	})
+	.transform( 'sorcery' );
 
 if ( gobble.env() === 'production' ) {
 	module.exports = lib;

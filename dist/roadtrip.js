@@ -5,7 +5,7 @@
 }(this, function () { 'use strict';
 
 	var a = document.createElement("a");
-	var QUERYPAIR_REGEX = /^([\w\-]+)(?:=([\w\-]*))?$/;
+	var QUERYPAIR_REGEX = /^([\w\-]+)(?:=([^&]*))?$/;
 	var HANDLERS = ["beforeenter", "enter", "leave"];
 
 	var isInitial = true;
@@ -106,7 +106,7 @@
 
 				if (match) {
 					var key = match[1],
-					    value = match[2];
+					    value = decodeURIComponent(match[2]);
 
 					if (query.hasOwnProperty(key)) {
 						if (typeof query[key] !== "object") {

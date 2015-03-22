@@ -1,7 +1,7 @@
 import roadtrip from './roadtrip';
 
 const a = document.createElement( 'a' );
-const QUERYPAIR_REGEX = /^([\w\-]+)(?:=([\w\-]*))?$/;
+const QUERYPAIR_REGEX = /^([\w\-]+)(?:=([^&]*))?$/;
 const HANDLERS = [ 'beforeenter', 'enter', 'leave' ];
 
 let isInitial = true;
@@ -95,7 +95,7 @@ Route.prototype = {
 			let match = QUERYPAIR_REGEX.exec( queryPairs[i] );
 
 			if ( match ) {
-				let key = match[1], value = match[2];
+				let key = match[1], value = decodeURIComponent( match[2] );
 
 				if ( query.hasOwnProperty( key ) ) {
 					if ( typeof query[ key ] !== 'object' ) {

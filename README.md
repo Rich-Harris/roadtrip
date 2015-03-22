@@ -72,8 +72,9 @@ roadtrip
   // the editing screen
   .add( '/:id/edit', {
     enter: function ( route, previousRoute ) {
-      route.view = displayContact({
-      	slideInFrom: route.isInitial ? null : 'right';
+      route.view = displayContactEditor({
+      	id: route.params.id,
+        slideInFrom: route.isInitial ? null : 'right';
       });
     },
 

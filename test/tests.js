@@ -160,9 +160,6 @@ describe( 'roadtrip', function () {
 
 				roadtrip
 					.add( '/foo', {
-						enter: function ( route ) {
-
-						},
 						leave: function ( route ) {
 							leftFoo = true;
 						}
@@ -171,6 +168,35 @@ describe( 'roadtrip', function () {
 
 				return roadtrip.goto( '/foo' ).then( function () {
 					assert.ok( !leftFoo );
+					window.close();
+				});
+			});
+		});
+	});
+
+	describe( 'route.isInitial', function () {
+		it( 'is true for the first (and only the first) route navigated to', function () {
+			return createDom().then( function ( window ) {
+				var roadtrip = window.roadtrip;
+
+				var rootWasInitial, fooWasInitial;
+
+				roadtrip
+					.add( '/', {
+						enter: function ( route ) {
+							rootWasInitial = route.isInitial;
+						}
+					})
+					.add( '/foo', {
+						enter: function ( route ) {
+							fooWasInitial = route.isInitial;
+						}
+					})
+					.start();
+
+				return roadtrip.goto( '/foo' ).then( function () {
+					assert.ok( rootWasInitial );
+					assert.ok( !fooWasInitial );
 					window.close();
 				});
 			});

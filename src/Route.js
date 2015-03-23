@@ -6,7 +6,7 @@ const HANDLERS = [ 'beforeenter', 'enter', 'leave' ];
 
 let isInitial = true;
 
-function RouteData ({ route, pathname, params, query, isInitial }) {
+function RouteData ({ route, pathname, params, query }) {
 	this.pathname = pathname;
 	this.params = params;
 	this.query = query;
@@ -111,7 +111,7 @@ Route.prototype = {
 			}
 		}
 
-		return new RouteData({ route: this, pathname, params, query, isInitial });
+		return new RouteData({ route: this, pathname, params, query });
 	}
 };
 

@@ -29,22 +29,30 @@ Roadtrip.prototype = {
 	},
 
 	start () {
-		this.goto( location.href, { replaceState: true });
+		return this.goto( location.href, { replaceState: true });
 	},
 
 	goto ( href, options = {} ) {
+		let target;
+		let promise = new roadtrip.Promise( ( fulfil, reject ) => {
+			target = this._target = { href, options, fulfil, reject };
+		});
+
+		if ( this.isTransitioning ) {
+			return promise;
+		}
+
+		this._goto( target );
+		return promise;
+	},
+
+	_goto ( target ) {
 		let i, len = this.routes.length;
 		let newRoute, data;
 
-		let target = this._target = { href, options };
-
-		if ( this.isTransitioning ) {
-			return;
-		}
-
 		for ( i = 0; i < len; i += 1 ) {
 			let route = this.routes[i];
-			data = route.exec( href );
+			data = route.exec( target.href );
 
 			if ( data ) {
 				newRoute = route;
@@ -53,7 +61,7 @@ Roadtrip.prototype = {
 		}
 
 		// TODO handle changes to query string/hashbang
-		if ( !newRoute || newRoute === this.currentRoute ) return;
+		if ( !newRoute || newRoute === this.currentRoute ) return roadtrip.Promise.resolve();
 
 		this.isTransitioning = true;
 
@@ -68,15 +76,19 @@ Roadtrip.prototype = {
 				// if the user navigated while the transition was taking
 				// place, we need to do it all again
 				if ( this._target !== target ) {
-					console.log( 'route changed midflight' );
-					this.goto( this._target.href, this._target.options );
+					this._goto( this._target );
 				}
-			});
+
+				else {
+					target.fulfil();
+				}
+			})
+			.catch( target.reject );
 
 		this.currentRoute = newRoute;
 		this.currentData = data;
 
-		history[ options.replaceState ? 'replaceState' : 'pushState' ]( {}, '', href );
+		history[ target.options.replaceState ? 'replaceState' : 'pushState' ]( {}, '', target.href );
 	}
 };
 

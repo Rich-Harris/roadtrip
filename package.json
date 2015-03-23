@@ -18,7 +18,7 @@
   },
   "scripts": {
     "test": "mocha",
-    "build": "set -e; npm test; rm -rf dist; cp test/.tmp dist",
+    "build": "set -e; npm test; mkdir -p dist; rm -rf dist/*; cp .tmp/roadtrip.* dist/; rm -rf .tmp",
     "prepublish": "npm run build"
   }
 }

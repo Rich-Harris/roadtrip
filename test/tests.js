@@ -31,6 +31,7 @@ describe( 'roadtrip', function () {
 	before( function () {
 		return require( '../gobblefile' ).build({
 			dest: path.resolve( __dirname, '../.tmp' ),
+			env: 'production',
 			force: true
 		}).then( function () {
 			roadtripSrc = fs.readFileSync( path.resolve( __dirname, '../.tmp/roadtrip.js' ), 'utf-8' );

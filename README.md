@@ -170,6 +170,13 @@ roadtrip.goto( newUrl, { replaceState: true });
 This library assumes your browser supports the HTML5 history API, and Promises. You can polyfill the history API with [devote/HTML5-History-API](https://github.com/devote/HTML5-History-API) (I haven't tried this, would welcome feedback from anyone who has), and you can provide a [Promises/A+ compliant](https://promisesaplus.com/) `Promise` object with `roadtrip.Promise === Promise` (otherwise it will use `window.Promise`).
 
 
+## Building and testing
+
+For testing, roadtrip uses [jsdom](https://github.com/tmpvar/jsdom), which requires [io.js](https://iojs.org/en/index.html) rather than [node.js](https://nodejs.org/). You'll therefore need to install io before you can build or test the library.
+
+To test, run `npm test`. To build to `./dist`, run `npm run build` (this will fail if the tests fail).
+
+
 
 ## License
 

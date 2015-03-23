@@ -1,5 +1,9 @@
 # changelog
 
+## 0.1.3
+
+* `route.isInitial` is only true for the first route ([#7](https://github.com/Rich-Harris/roadtrip/issues/7))
+
 ## 0.1.2
 
 * Promises returned from `roadtrip.goto()` resolve correctly

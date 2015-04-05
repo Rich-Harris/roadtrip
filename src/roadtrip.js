@@ -3,109 +3,106 @@ import watchLinks from './utils/watchLinks';
 import isSameRoute from './utils/isSameRoute';
 
 // Enables HTML5-History-API polyfill: https://github.com/devote/HTML5-History-API
-var location = window.history.location || window.location;
+const location = window.history.location || window.location;
 
 function noop () {}
 
-function Roadtrip () {
-	this.routes = [];
+let routes = [];
+let currentData = {};
+let currentRoute = {
+	enter: () => roadtrip.Promise.resolve(),
+	leave: () => roadtrip.Promise.resolve()
+};
 
-	this.currentData = {};
-	this.currentRoute = {
-		enter: () => roadtrip.Promise.resolve(),
-		leave: () => roadtrip.Promise.resolve()
-	};
+let _target;
+let isTransitioning = false;
 
-	this.base = '';
+const roadtrip = {
+	base: '',
+	Promise: window.Promise,
 
-	watchLinks( href => this.goto( href ) );
-
-	window.addEventListener( 'popstate', () => {
-		this._target = {
-			href: location.href,
-			popstate: true, // so we know not to manipulate the history
-			fulfil: noop,
-			reject: noop
-		};
-
-		this._goto( this._target );
-	}, false );
-}
-
-Roadtrip.prototype = {
 	add ( path, options ) {
-		this.routes.push( new Route( path, options ) );
-		return this;
+		routes.push( new Route( path, options ) );
+		return roadtrip;
 	},
 
 	start () {
-		return this.goto( location.href, { replaceState: true });
+		return roadtrip.goto( location.href, { replaceState: true });
 	},
 
 	goto ( href, options = {} ) {
 		let target;
-		let promise = new roadtrip.Promise( ( fulfil, reject ) => {
-			target = this._target = { href, options, fulfil, reject };
+		const promise = new roadtrip.Promise( ( fulfil, reject ) => {
+			target = _target = { href, options, fulfil, reject };
 		});
 
-		if ( this.isTransitioning ) {
+		if ( isTransitioning ) {
 			return promise;
 		}
 
-		this._goto( target );
+		_goto( target );
 		return promise;
-	},
-
-	_goto ( target ) {
-		let i, len = this.routes.length;
-		let newRoute, data;
-
-		for ( i = 0; i < len; i += 1 ) {
-			let route = this.routes[i];
-			data = route.exec( target.href );
-
-			if ( data ) {
-				newRoute = route;
-				break;
-			}
-		}
-
-		// TODO handle changes to query string/hashbang differently
-		if ( !newRoute || isSameRoute( newRoute, this.currentRoute, data, this.currentData ) ) {
-			return target.fulfil();
-		}
-
-		this.isTransitioning = true;
-
-		roadtrip.Promise.all([
-			this.currentRoute.leave( this.currentData, data ),
-			newRoute.beforeenter( data, this.currentData )
-		])
-			.then( () => newRoute.enter( data, this.currentData ) )
-			.then( () => {
-				this.isTransitioning = false;
-
-				// if the user navigated while the transition was taking
-				// place, we need to do it all again
-				if ( this._target !== target ) {
-					this._goto( this._target );
-				}
-
-				else {
-					target.fulfil();
-				}
-			})
-			.catch( target.reject );
-
-		this.currentRoute = newRoute;
-		this.currentData = data;
-
-		if ( target.popstate ) return;
-		history[ target.options.replaceState ? 'replaceState' : 'pushState' ]( {}, '', target.href );
 	}
 };
 
-let roadtrip = new Roadtrip();
-roadtrip.Promise = window.Promise;
+watchLinks( href => roadtrip.goto( href ) );
+
+// watch history
+window.addEventListener( 'popstate', () => {
+	_target = {
+		href: location.href,
+		popstate: true, // so we know not to manipulate the history
+		fulfil: noop,
+		reject: noop
+	};
+
+	_goto( _target );
+}, false );
+
+
+function _goto ( target ) {
+	let i, len = routes.length;
+	let newRoute, data;
+
+	for ( i = 0; i < len; i += 1 ) {
+		let route = routes[i];
+		data = route.exec( target.href );
+
+		if ( data ) {
+			newRoute = route;
+			break;
+		}
+	}
+
+	if ( !newRoute || isSameRoute( newRoute, currentRoute, data, currentData ) ) {
+		return target.fulfil();
+	}
+
+	isTransitioning = true;
+
+	roadtrip.Promise.all([
+		currentRoute.leave( currentData, data ),
+		newRoute.beforeenter( data, currentData )
+	])
+		.then( () => newRoute.enter( data, currentData ) )
+		.then( () => {
+			isTransitioning = false;
+
+			// if the user navigated while the transition was taking
+			// place, we need to do it all again
+			if ( _target !== target ) {
+				_goto( _target );
+			} else {
+				target.fulfil();
+			}
+		})
+		.catch( target.reject );
+
+	currentRoute = newRoute;
+	currentData = data;
+
+	if ( target.popstate ) return;
+	history[ target.options.replaceState ? 'replaceState' : 'pushState' ]( {}, '', target.href );
+}
 
 export default roadtrip;

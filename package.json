@@ -2,7 +2,7 @@
   "name": "roadtrip",
   "description": "Client-side routing library. It's about the journey, not just the destination",
   "author": "Rich Harris",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "license": "MIT",
   "main": "dist/roadtrip.js",
   "jsnext:main": "src/roadtrip.js",

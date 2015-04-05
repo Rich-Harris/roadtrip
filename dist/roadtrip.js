@@ -265,108 +265,110 @@
 
 	var roadtrip__location = window.history.location || window.location;
 
-	function Roadtrip() {
-		var _this = this;
+	function noop() {}
 
-		this.routes = [];
+	var routes = [];
+	var currentData = {};
+	var currentRoute = {
+		enter: function () {
+			return roadtrip.Promise.resolve();
+		},
+		leave: function () {
+			return roadtrip.Promise.resolve();
+		}
+	};
 
-		this.currentData = {};
-		this.currentRoute = {
-			enter: function () {
-				return roadtrip.Promise.resolve();
-			},
-			leave: function () {
-				return roadtrip.Promise.resolve();
-			}
-		};
+	var _target = undefined;
+	var isTransitioning = false;
 
-		this.base = "";
+	var roadtrip = {
+		base: "",
+		Promise: window.Promise,
 
-		watchLinks(function (href) {
-			return _this.goto(href);
-		});
-
-		window.addEventListener("popstate", function () {
-			_this.goto(roadtrip__location.href);
-		}, false);
-	}
-
-	Roadtrip.prototype = {
 		add: function (path, options) {
-			this.routes.push(new Route(path, options));
-			return this;
+			routes.push(new Route(path, options));
+			return roadtrip;
 		},
 
 		start: function () {
-			return this.goto(roadtrip__location.href, { replaceState: true });
+			return roadtrip.goto(roadtrip__location.href, { replaceState: true });
 		},
 
 		goto: function (href) {
-			var _this = this;
-
 			var options = arguments[1] === undefined ? {} : arguments[1];
 
 			var target = undefined;
 			var promise = new roadtrip.Promise(function (fulfil, reject) {
-				target = _this._target = { href: href, options: options, fulfil: fulfil, reject: reject };
+				target = _target = { href: href, options: options, fulfil: fulfil, reject: reject };
 			});
 
-			if (this.isTransitioning) {
+			if (isTransitioning) {
 				return promise;
 			}
 
-			this._goto(target);
+			_goto(target);
 			return promise;
-		},
-
-		_goto: function (target) {
-			var _this = this;
-
-			var i = undefined,
-			    len = this.routes.length;
-			var newRoute = undefined,
-			    data = undefined;
-
-			for (i = 0; i < len; i += 1) {
-				var route = this.routes[i];
-				data = route.exec(target.href);
-
-				if (data) {
-					newRoute = route;
-					break;
-				}
-			}
-
-			// TODO handle changes to query string/hashbang differently
-			if (!newRoute || isSameRoute(newRoute, this.currentRoute, data, this.currentData)) {
-				return target.fulfil();
-			}
-
-			this.isTransitioning = true;
-
-			roadtrip.Promise.all([this.currentRoute.leave(this.currentData, data), newRoute.beforeenter(data, this.currentData)]).then(function () {
-				return newRoute.enter(data, _this.currentData);
-			}).then(function () {
-				_this.isTransitioning = false;
-
-				// if the user navigated while the transition was taking
-				// place, we need to do it all again
-				if (_this._target !== target) {
-					_this._goto(_this._target);
-				} else {
-					target.fulfil();
-				}
-			}).catch(target.reject);
-
-			this.currentRoute = newRoute;
-			this.currentData = data;
-
-			history[target.options.replaceState ? "replaceState" : "pushState"]({}, "", target.href);
 		}
 	};
 
-	var roadtrip = new Roadtrip();
-	roadtrip.Promise = window.Promise;
+	watchLinks(function (href) {
+		return roadtrip.goto(href);
+	});
+
+	// watch history
+	window.addEventListener("popstate", function () {
+		_target = {
+			href: roadtrip__location.href,
+			popstate: true, // so we know not to manipulate the history
+			fulfil: noop,
+			reject: noop
+		};
+
+		_goto(_target);
+	}, false);
+
+	function _goto(target) {
+		var i = undefined,
+		    len = routes.length;
+		var newRoute = undefined,
+		    data = undefined;
+
+		for (i = 0; i < len; i += 1) {
+			var route = routes[i];
+			data = route.exec(target.href);
+
+			if (data) {
+				newRoute = route;
+				break;
+			}
+		}
+
+		if (!newRoute || isSameRoute(newRoute, currentRoute, data, currentData)) {
+			return target.fulfil();
+		}
+
+		isTransitioning = true;
+
+		roadtrip.Promise.all([currentRoute.leave(currentData, data), newRoute.beforeenter(data, currentData)]).then(function () {
+			return newRoute.enter(data, currentData);
+		}).then(function () {
+			isTransitioning = false;
+
+			// if the user navigated while the transition was taking
+			// place, we need to do it all again
+			if (_target !== target) {
+				_goto(_target);
+			} else {
+				target.fulfil();
+			}
+		}).catch(target.reject);
+
+		currentRoute = newRoute;
+		currentData = data;
+
+		if (target.popstate) return;
+		history[target.options.replaceState ? "replaceState" : "pushState"]({}, "", target.href);
+	}
 
 
 	//# sourceMappingURL=/www/roadtrip/.gobble-build/01-babel/1/roadtrip.js.01-babel.map

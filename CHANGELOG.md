@@ -1,5 +1,10 @@
 # changelog
 
+## 0.1.5
+
+* Fix bug whereby `history.back()`/`history.forward()` would cause the stack to be corrupted
+* Internal refactor
+
 ## 0.1.4
 
 * Fix transitioning from one route to same route with different params

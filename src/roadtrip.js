@@ -1,5 +1,6 @@
 import Route from './Route';
 import watchLinks from './utils/watchLinks';
+import isSameRoute from './utils/isSameRoute';
 
 // Enables HTML5-History-API polyfill: https://github.com/devote/HTML5-History-API
 var location = window.history.location || window.location;
@@ -60,8 +61,10 @@ Roadtrip.prototype = {
 			}
 		}
 
-		// TODO handle changes to query string/hashbang
-		if ( !newRoute || newRoute === this.currentRoute ) return roadtrip.Promise.resolve();
+		// TODO handle changes to query string/hashbang differently
+		if ( !newRoute || isSameRoute( newRoute, this.currentRoute, data, this.currentData ) ) {
+			return target.fulfil();
+		}
 
 		this.isTransitioning = true;
 

@@ -15,7 +15,6 @@
 		var pathname = _ref.pathname;
 		var params = _ref.params;
 		var query = _ref.query;
-		var isInitial = _ref.isInitial;
 
 		this.pathname = pathname;
 		this.params = params;
@@ -120,7 +119,7 @@
 				}
 			}
 
-			return new RouteData({ route: this, pathname: pathname, params: params, query: query, isInitial: isInitial });
+			return new RouteData({ route: this, pathname: pathname, params: params, query: query });
 		}
 	};
 
@@ -210,6 +209,60 @@
 	}
 	//# sourceMappingURL=/www/roadtrip/.gobble-build/01-babel/1/utils/watchLinks.js.01-babel.map
 
+	function isSameRoute(routeA, routeB, dataA, dataB) {
+		if (routeA !== routeB) {
+			return false;
+		}
+
+		return deepEqual(dataA.params, dataB.params) && deepEqual(dataA.query, dataB.query);
+	}
+
+	function deepEqual(a, b) {
+		if (a === null && b === null) {
+			return true;
+		}
+
+		if (isArray(a) && isArray(b)) {
+			var i = a.length;
+
+			if (b.length !== i) return false;
+
+			while (i--) {
+				if (!deepEqual(a[i], b[i])) {
+					return false;
+				}
+			}
+
+			return true;
+		} else if (typeof a === "object" && typeof b === "object") {
+			var aKeys = Object.keys(a);
+			var bKeys = Object.keys(b);
+
+			var i = aKeys.length;
+
+			if (bKeys.length !== i) return false;
+
+			while (i--) {
+				var key = aKeys[i];
+
+				if (!b.hasOwnProperty(key) || !deepEqual(b[key], a[key])) {
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		return a === b;
+	}
+
+	var toString = Object.prototype.toString;
+
+	function isArray(thing) {
+		return toString.call(thing) === "[object Array]";
+	}
+	//# sourceMappingURL=/www/roadtrip/.gobble-build/01-babel/1/utils/isSameRoute.js.01-babel.map
+
 	var roadtrip__location = window.history.location || window.location;
 
 	function Roadtrip() {
@@ -284,8 +337,10 @@
 				}
 			}
 
-			// TODO handle changes to query string/hashbang
-			if (!newRoute || newRoute === this.currentRoute) return roadtrip.Promise.resolve();
+			// TODO handle changes to query string/hashbang differently
+			if (!newRoute || isSameRoute(newRoute, this.currentRoute, data, this.currentData)) {
+				return target.fulfil();
+			}
 
 			this.isTransitioning = true;
 

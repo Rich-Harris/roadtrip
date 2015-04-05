@@ -156,7 +156,7 @@ describe( 'roadtrip', function () {
 
 				var leftFoo;
 
-				window.location.href += '/foo';
+				window.location.href += 'foo';
 
 				roadtrip
 					.add( '/foo', {
@@ -168,6 +168,31 @@ describe( 'roadtrip', function () {
 
 				return roadtrip.goto( '/foo' ).then( function () {
 					assert.ok( !leftFoo );
+					window.close();
+				});
+			});
+		});
+
+		it( 'does not treat navigating to the same route with different params as a noop', function () {
+			return createDom().then( function ( window ) {
+				var roadtrip = window.roadtrip;
+
+				var left = {};
+
+				window.location.href += 'foo';
+
+				console.log( 'window.location.href', window.location.href );
+
+				roadtrip
+					.add( '/:id', {
+						leave: function ( route ) {
+							left[ route.params.id ] = true;
+						}
+					})
+					.start();
+
+				return roadtrip.goto( '/bar' ).then( function () {
+					assert.ok( left.foo );
 					window.close();
 				});
 			});

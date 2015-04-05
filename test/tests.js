@@ -227,4 +227,67 @@ describe( 'roadtrip', function () {
 			});
 		});
 	});
+
+	describe( 'history', function () {
+		it( 'can control roadtrip without the history stack being corrupted', function () {
+			return createDom().then( function ( window ) {
+				var roadtrip = window.roadtrip;
+				var routes = [];
+
+				roadtrip
+					.add( '/', {
+						enter: function () {
+							routes.push( 'root' );
+						}
+					})
+					.add( '/foo', {
+						enter: function () {
+							routes.push( 'foo' );
+						}
+					})
+					.add( '/:id', {
+						enter: function ( route ) {
+							routes.push( route.params.id );
+						}
+					})
+					.start();
+
+				function goto ( href ) {
+					return function () {
+						return roadtrip.goto( href );
+					};
+				}
+
+				function back () {
+					window.history.back();
+					return wait();
+				}
+
+				function forward () {
+					window.history.forward();
+					return wait();
+				}
+
+				return roadtrip.goto( '/foo' )
+					.then( goto( '/bar' ) )
+					.then( goto( '/baz' ) )
+					.then( back )    // bar
+					.then( back )    // foo
+					.then( back )    // root
+					.then( forward ) // foo
+					.then( forward ) // bar
+					.then( forward ) // baz
+					.then( function () {
+						assert.deepEqual( routes, [ 'root', 'foo', 'bar', 'baz', 'bar', 'foo', 'root', 'foo', 'bar', 'baz' ] );
+						window.close();
+					});
+			});
+		});
+	});
 });
+
+function wait ( ms ) {
+	return new Promise( function ( fulfil ) {
+		setTimeout( fulfil, ms || 0 );
+	});
+}

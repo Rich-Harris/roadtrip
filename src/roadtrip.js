@@ -5,6 +5,8 @@ import isSameRoute from './utils/isSameRoute';
 // Enables HTML5-History-API polyfill: https://github.com/devote/HTML5-History-API
 var location = window.history.location || window.location;
 
+function noop () {}
+
 function Roadtrip () {
 	this.routes = [];
 
@@ -19,7 +21,14 @@ function Roadtrip () {
 	watchLinks( href => this.goto( href ) );
 
 	window.addEventListener( 'popstate', () => {
-		this.goto( location.href );
+		this._target = {
+			href: location.href,
+			popstate: true, // so we know not to manipulate the history
+			fulfil: noop,
+			reject: noop
+		};
+
+		this._goto( this._target );
 	}, false );
 }
 
@@ -91,6 +100,7 @@ Roadtrip.prototype = {
 		this.currentRoute = newRoute;
 		this.currentData = data;
 
+		if ( target.popstate ) return;
 		history[ target.options.replaceState ? 'replaceState' : 'pushState' ]( {}, '', target.href );
 	}
 };

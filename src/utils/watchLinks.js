@@ -28,10 +28,8 @@ export default function watchLinks ( callback ) {
 		// ensure non-hash for the same path
 		if ( el.pathname === location.pathname && ( el.hash ) ) return;
 
-		let link = el.getAttribute( 'href' );
-
 		// Check for mailto: in the href
-		if ( ~link.indexOf( 'mailto:' ) ) return;
+		if ( ~el.href.indexOf( 'mailto:' ) ) return;
 
 		// check target
 		if ( el.target ) return;

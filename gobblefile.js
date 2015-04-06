@@ -1,5 +1,4 @@
 var gobble = require( 'gobble' );
-var lib, demo;
 
 var babelWhitelist = [
 	'es6.arrowFunctions',
@@ -13,7 +12,7 @@ var babelWhitelist = [
 	'es6.templateLiterals'
 ];
 
-lib = gobble( 'src' )
+module.exports = gobble( 'src' )
 	.transform( 'babel', {
 		whitelist: babelWhitelist
 	})
@@ -23,13 +22,3 @@ lib = gobble( 'src' )
 		name: 'roadtrip'
 	})
 	.transform( 'sorcery' );
-
-if ( gobble.env() === 'production' ) {
-	module.exports = lib;
-} else {
-	demo = gobble( 'demo' ).transform( 'babel', {
-		whitelist: babelWhitelist
-	});
-
-	module.exports = gobble([ lib, demo ]);
-}

@@ -6,7 +6,7 @@ var assert = require( 'assert' );
 describe( 'roadtrip', function () {
 	var roadtripSrc, simulantSrc;
 
-	function createDom ( html ) {
+	function createTestEnvironment ( html ) {
 		return new Promise( function ( fulfil, reject ) {
 			jsdom.env({
 				html: html || '',
@@ -43,14 +43,14 @@ describe( 'roadtrip', function () {
 
 	describe( 'sanity checks', function () {
 		it( 'roadtrip exists', function () {
-			return createDom().then( function ( window ) {
+			return createTestEnvironment().then( function ( window ) {
 				assert.ok( window.roadtrip );
 				window.close();
 			});
 		});
 
 		it( 'roadtrip has add, start and goto methods', function () {
-			return createDom().then( function ( window ) {
+			return createTestEnvironment().then( function ( window ) {
 				var roadtrip = window.roadtrip;
 
 				assert.ok( typeof roadtrip.add === 'function' );
@@ -63,7 +63,7 @@ describe( 'roadtrip', function () {
 
 	describe( 'roadtrip.start()', function () {
 		it( 'navigates to the current route', function ( done ) {
-			return createDom().then( function ( window ) {
+			return createTestEnvironment().then( function ( window ) {
 				var roadtrip = window.roadtrip;
 
 				roadtrip
@@ -80,7 +80,7 @@ describe( 'roadtrip', function () {
 		});
 
 		it( 'returns a promise that resolves once the route transition completes', function () {
-			return createDom().then( function ( window ) {
+			return createTestEnvironment().then( function ( window ) {
 				var roadtrip = window.roadtrip;
 
 				var enteredRoot;
@@ -103,7 +103,7 @@ describe( 'roadtrip', function () {
 
 	describe( 'roadtrip.goto()', function () {
 		it( 'leaves the current route and enters a new one', function () {
-			return createDom().then( function ( window ) {
+			return createTestEnvironment().then( function ( window ) {
 				var roadtrip = window.roadtrip;
 
 				var leftRoot, enteredFoo;
@@ -129,7 +129,7 @@ describe( 'roadtrip', function () {
 		});
 
 		it( 'returns a promise that resolves once the route transition completes', function () {
-			return createDom().then( function ( window ) {
+			return createTestEnvironment().then( function ( window ) {
 				var roadtrip = window.roadtrip;
 
 				var enteredFoo;
@@ -151,7 +151,7 @@ describe( 'roadtrip', function () {
 		});
 
 		it( 'treats navigating to the same route as a noop', function () {
-			return createDom().then( function ( window ) {
+			return createTestEnvironment().then( function ( window ) {
 				var roadtrip = window.roadtrip;
 
 				var leftFoo;
@@ -174,7 +174,7 @@ describe( 'roadtrip', function () {
 		});
 
 		it( 'does not treat navigating to the same route with different params as a noop', function () {
-			return createDom().then( function ( window ) {
+			return createTestEnvironment().then( function ( window ) {
 				var roadtrip = window.roadtrip;
 
 				var left = {};
@@ -201,7 +201,7 @@ describe( 'roadtrip', function () {
 
 	describe( 'route.isInitial', function () {
 		it( 'is true for the first (and only the first) route navigated to', function () {
-			return createDom().then( function ( window ) {
+			return createTestEnvironment().then( function ( window ) {
 				var roadtrip = window.roadtrip;
 
 				var rootWasInitial, fooWasInitial;
@@ -230,7 +230,7 @@ describe( 'roadtrip', function () {
 
 	describe( 'history', function () {
 		it( 'can control roadtrip without the history stack being corrupted', function () {
-			return createDom().then( function ( window ) {
+			return createTestEnvironment().then( function ( window ) {
 				var roadtrip = window.roadtrip;
 				var routes = [];
 

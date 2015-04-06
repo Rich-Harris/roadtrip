@@ -1,5 +1,9 @@
 # changelog
 
+## 0.1.6
+
+* Fix bug with `<a>` elements with no `href`
+
 ## 0.1.5
 
 * Fix bug whereby `history.back()`/`history.forward()` would cause the stack to be corrupted

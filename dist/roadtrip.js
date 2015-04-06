@@ -4,6 +4,8 @@
 	global.roadtrip = factory()
 }(this, function () { 'use strict';
 
+	var _Route = Route;
+
 	var a = document.createElement("a");
 	var QUERYPAIR_REGEX = /^([\w\-]+)(?:=([^&]*))?$/;
 	var HANDLERS = ["beforeenter", "enter", "leave"];
@@ -56,7 +58,7 @@
 					value = options[handler](route, other);
 				}
 
-				return roadtrip.Promise.resolve(value);
+				return _roadtrip.Promise.resolve(value);
 			};
 		});
 	}
@@ -131,12 +133,11 @@
 			return b[0] === ":" || a === b;
 		}
 	}
-	//# sourceMappingURL=/www/roadtrip/.gobble-build/01-babel/1/Route.js.01-babel.map
 
 	// Adapted from https://github.com/visionmedia/page.js
 	// MIT license https://github.com/visionmedia/page.js#license
 
-
+	var utils_watchLinks = watchLinks;
 
 	function watchLinks(callback) {
 		window.addEventListener("click", handler, false);
@@ -163,10 +164,8 @@
 			// ensure non-hash for the same path
 			if (el.pathname === location.pathname && el.hash) return;
 
-			var link = el.getAttribute("href");
-
 			// Check for mailto: in the href
-			if (~link.indexOf("mailto:")) return;
+			if (~el.href.indexOf("mailto:")) return;
 
 			// check target
 			if (el.target) return;
@@ -185,11 +184,11 @@
 			// same page
 			var orig = path;
 
-			if (path.indexOf(roadtrip.base) === 0) {
-				path = path.substr(roadtrip.base.length);
+			if (path.indexOf(_roadtrip.base) === 0) {
+				path = path.substr(_roadtrip.base.length);
 			}
 
-			if (roadtrip.base && orig === path) return;
+			if (_roadtrip.base && orig === path) return;
 
 			event.preventDefault();
 			callback(orig);
@@ -207,7 +206,8 @@
 
 		return href && href.indexOf(origin) === 0;
 	}
-	//# sourceMappingURL=/www/roadtrip/.gobble-build/01-babel/1/utils/watchLinks.js.01-babel.map
+
+	var utils_isSameRoute = isSameRoute;
 
 	function isSameRoute(routeA, routeB, dataA, dataB) {
 		if (routeA !== routeB) {
@@ -261,9 +261,8 @@
 	function isArray(thing) {
 		return toString.call(thing) === "[object Array]";
 	}
-	//# sourceMappingURL=/www/roadtrip/.gobble-build/01-babel/1/utils/isSameRoute.js.01-babel.map
 
-	var roadtrip__location = window.history.location || window.location;
+	var _roadtrip__location = window.history.location || window.location;
 
 	function noop() {}
 
@@ -286,12 +285,12 @@
 		Promise: window.Promise,
 
 		add: function (path, options) {
-			routes.push(new Route(path, options));
+			routes.push(new _Route(path, options));
 			return roadtrip;
 		},
 
 		start: function () {
-			return roadtrip.goto(roadtrip__location.href, { replaceState: true });
+			return roadtrip.goto(_roadtrip__location.href, { replaceState: true });
 		},
 
 		goto: function (href) {
@@ -311,14 +310,14 @@
 		}
 	};
 
-	watchLinks(function (href) {
+	utils_watchLinks(function (href) {
 		return roadtrip.goto(href);
 	});
 
 	// watch history
 	window.addEventListener("popstate", function () {
 		_target = {
-			href: roadtrip__location.href,
+			href: _roadtrip__location.href,
 			popstate: true, // so we know not to manipulate the history
 			fulfil: noop,
 			reject: noop
@@ -343,7 +342,7 @@
 			}
 		}
 
-		if (!newRoute || isSameRoute(newRoute, currentRoute, data, currentData)) {
+		if (!newRoute || utils_isSameRoute(newRoute, currentRoute, data, currentData)) {
 			return target.fulfil();
 		}
 
@@ -370,10 +369,9 @@
 		history[target.options.replaceState ? "replaceState" : "pushState"]({}, "", target.href);
 	}
 
+	var _roadtrip = roadtrip;
 
-	//# sourceMappingURL=/www/roadtrip/.gobble-build/01-babel/1/roadtrip.js.01-babel.map
-
-	return roadtrip;
+	return _roadtrip;
 
 }));
 //# sourceMappingURL=roadtrip.js.map

@@ -2,23 +2,23 @@
   "name": "roadtrip",
   "description": "Client-side routing library. It's about the journey, not just the destination",
   "author": "Rich Harris",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "license": "MIT",
   "main": "dist/roadtrip.js",
   "jsnext:main": "src/roadtrip.js",
   "devDependencies": {
-    "gobble": "^0.7.9",
-    "gobble-babel": "^4.0.1",
+    "gobble": "^0.10.2",
+    "gobble-babel": "^5.1.0",
     "gobble-cli": "^0.3.5",
-    "gobble-esperanto-bundle": "^0.1.7",
-    "gobble-sorcery": "^0.2.5",
+    "gobble-rollup": "^0.2.0",
     "jsdom": "^4.0.4",
     "mocha": "^2.2.1",
     "simulant": "^0.1.3"
   },
   "scripts": {
     "test": "mocha",
-    "build": "set -e; npm test; mkdir -p dist; rm -rf dist/*; cp .tmp/roadtrip.* dist/; rm -rf .tmp",
+    "pretest": "npm run build",
+    "build": "gobble build -f dist",
     "prepublish": "npm run build"
   }
 }

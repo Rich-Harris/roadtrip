@@ -3,9 +3,10 @@ var fs = require( 'fs' );
 var jsdom = require( 'jsdom' );
 var assert = require( 'assert' );
 
-describe( 'roadtrip', function () {
-	var roadtripSrc, simulantSrc;
+var roadtripSrc = fs.readFileSync( path.resolve( __dirname, '../dist/roadtrip.js' ), 'utf-8' );
+var simulantSrc = fs.readFileSync( path.resolve( __dirname, '../node_modules/simulant/simulant.js' ), 'utf-8' );
 
+describe( 'roadtrip', function () {
 	function createTestEnvironment ( html ) {
 		return new Promise( function ( fulfil, reject ) {
 			jsdom.env({
@@ -27,19 +28,6 @@ describe( 'roadtrip', function () {
 			})
 		});
 	}
-
-	before( function () {
-		return require( '../gobblefile' ).build({
-			dest: path.resolve( __dirname, '../.tmp' ),
-			env: 'production',
-			force: true
-		}).then( function () {
-			roadtripSrc = fs.readFileSync( path.resolve( __dirname, '../.tmp/roadtrip.js' ), 'utf-8' );
-		});
-	});
-
-	simulantSrc = fs.readFileSync( path.resolve( __dirname, '../node_modules/simulant/simulant.js' ), 'utf-8' );
-
 
 	describe( 'sanity checks', function () {
 		it( 'roadtrip exists', function () {

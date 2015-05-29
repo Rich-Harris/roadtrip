@@ -1,5 +1,10 @@
 # changelog
 
+## 0.1.7
+
+* Fix boneheaded path matching bug
+* Prevent non-matching routes being handled
+
 ## 0.1.6
 
 * Fix bug with `<a>` elements with no `href`

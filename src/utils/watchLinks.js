@@ -1,4 +1,5 @@
 import roadtrip from '../roadtrip';
+import routes from '../routes';
 
 // Adapted from https://github.com/visionmedia/page.js
 // MIT license https://github.com/visionmedia/page.js#license
@@ -53,6 +54,9 @@ export default function watchLinks ( callback ) {
 		}
 
 		if ( roadtrip.base && orig === path ) return;
+
+		// no match? allow navigation
+		if ( !routes.some( route => route.matches( orig ) ) ) return;
 
 		event.preventDefault();
 		callback( orig );

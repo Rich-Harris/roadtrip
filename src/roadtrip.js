@@ -1,13 +1,13 @@
 import Route from './Route';
 import watchLinks from './utils/watchLinks';
 import isSameRoute from './utils/isSameRoute';
+import routes from './routes';
 
 // Enables HTML5-History-API polyfill: https://github.com/devote/HTML5-History-API
 const location = window.history.location || window.location;
 
 function noop () {}
 
-let routes = [];
 let currentData = {};
 let currentRoute = {
 	enter: () => roadtrip.Promise.resolve(),

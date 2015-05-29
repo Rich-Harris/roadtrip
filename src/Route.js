@@ -120,6 +120,10 @@ function segmentsMatch ( a, b ) {
 
 	let i = a.length;
 	while ( i-- ) {
-		return b[0] === ':' || a === b;
+		if ( ( a[i] !== b[i] ) && ( b[i][0] !== ':' ) ) {
+			return false;
+		}
 	}
+
+	return true;
 }

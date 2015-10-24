@@ -3,7 +3,7 @@ var fs = require( 'fs' );
 var jsdom = require( 'jsdom' );
 var assert = require( 'assert' );
 
-var roadtripSrc = fs.readFileSync( path.resolve( __dirname, '../dist/roadtrip.js' ), 'utf-8' );
+var roadtripSrc = fs.readFileSync( path.resolve( __dirname, '../dist/roadtrip.umd.js' ), 'utf-8' );
 var simulantSrc = fs.readFileSync( path.resolve( __dirname, '../node_modules/simulant/simulant.js' ), 'utf-8' );
 
 describe( 'roadtrip', function () {

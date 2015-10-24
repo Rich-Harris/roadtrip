@@ -1,5 +1,9 @@
 # changelog
 
+## 0.2.0
+
+* Create separate UMD and ES6 builds
+
 ## 0.1.7
 
 * Fix boneheaded path matching bug

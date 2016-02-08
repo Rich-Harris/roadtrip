@@ -1,5 +1,5 @@
-import roadtrip from '../roadtrip';
-import routes from '../routes';
+import roadtrip from '../roadtrip.js';
+import routes from '../routes.js';
 
 // Adapted from https://github.com/visionmedia/page.js
 // MIT license https://github.com/visionmedia/page.js#license

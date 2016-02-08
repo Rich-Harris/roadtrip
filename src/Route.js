@@ -1,4 +1,4 @@
-import roadtrip from './roadtrip';
+import roadtrip from './roadtrip.js';
 
 const a = document.createElement( 'a' );
 const QUERYPAIR_REGEX = /^([\w\-]+)(?:=([^&]*))?$/;
@@ -21,7 +21,7 @@ RouteData.prototype = {
 	matches ( href ) {
 		return this._route.matches( href );
 	}
-}
+};
 
 export default function Route ( path, options ) {
 	// strip leading slash

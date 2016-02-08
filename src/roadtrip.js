@@ -1,7 +1,7 @@
-import Route from './Route';
-import watchLinks from './utils/watchLinks';
-import isSameRoute from './utils/isSameRoute';
-import routes from './routes';
+import Route from './Route.js';
+import watchLinks from './utils/watchLinks.js';
+import isSameRoute from './utils/isSameRoute.js';
+import routes from './routes.js';
 
 // Enables HTML5-History-API polyfill: https://github.com/devote/HTML5-History-API
 const location = window.history.location || window.location;

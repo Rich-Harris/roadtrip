@@ -1,8 +1,148 @@
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
 	typeof define === 'function' && define.amd ? define(factory) :
-	global.roadtrip = factory();
+	(global.roadtrip = factory());
 }(this, function () { 'use strict';
+
+	var babelHelpers = {};
+	babelHelpers.typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+	  return typeof obj;
+	} : function (obj) {
+	  return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
+	};
+	babelHelpers;
+
+	var a = document.createElement('a');
+	var QUERYPAIR_REGEX = /^([\w\-]+)(?:=([^&]*))?$/;
+	var HANDLERS = ['beforeenter', 'enter', 'leave'];
+
+	var isInitial = true;
+
+	function RouteData(_ref) {
+		var route = _ref.route;
+		var pathname = _ref.pathname;
+		var params = _ref.params;
+		var query = _ref.query;
+
+		this.pathname = pathname;
+		this.params = params;
+		this.query = query;
+		this.isInitial = isInitial;
+
+		this._route = route;
+
+		isInitial = false;
+	}
+
+	RouteData.prototype = {
+		matches: function matches(href) {
+			return this._route.matches(href);
+		}
+	};
+
+	function Route(path, options) {
+		var _this = this;
+
+		// strip leading slash
+		if (path[0] === '/') {
+			path = path.slice(1);
+		}
+
+		this.path = path;
+		this.segments = path.split('/');
+
+		if (typeof options === 'function') {
+			options = {
+				enter: options
+			};
+		}
+
+		HANDLERS.forEach(function (handler) {
+			_this[handler] = function (route, other) {
+				var value = undefined;
+
+				if (options[handler]) {
+					value = options[handler](route, other);
+				}
+
+				return roadtrip.Promise.resolve(value);
+			};
+		});
+	}
+
+	Route.prototype = {
+		matches: function matches(href) {
+			a.href = href;
+
+			var pathname = a.pathname.slice(1);
+			var segments = pathname.split('/');
+
+			return segmentsMatch(segments, this.segments);
+		},
+		exec: function exec(href) {
+			a.href = href;
+
+			var pathname = a.pathname.slice(1);
+			var search = a.search.slice(1);
+
+			var segments = pathname.split('/');
+
+			if (segments.length !== this.segments.length) {
+				return false;
+			}
+
+			var params = {},
+			    i = undefined;
+
+			for (i = 0; i < segments.length; i += 1) {
+				var segment = segments[i];
+				var toMatch = this.segments[i];
+
+				if (toMatch[0] === ':') {
+					params[toMatch.slice(1)] = segment;
+				} else if (segment !== toMatch) {
+					return false;
+				}
+			}
+
+			var query = {};
+			var queryPairs = search.split('&');
+
+			for (i = 0; i < queryPairs.length; i += 1) {
+				var match = QUERYPAIR_REGEX.exec(queryPairs[i]);
+
+				if (match) {
+					var key = match[1],
+					    value = decodeURIComponent(match[2]);
+
+					if (query.hasOwnProperty(key)) {
+						if (babelHelpers.typeof(query[key]) !== 'object') {
+							query[key] = [query[key]];
+						}
+
+						query[key].push(value);
+					} else {
+						query[key] = value;
+					}
+				}
+			}
+
+			return new RouteData({ route: this, pathname: pathname, params: params, query: query });
+		}
+	};
+
+	function segmentsMatch(a, b) {
+		if (a.length !== b.length) return;
+
+		var i = a.length;
+		while (i--) {
+			if (a[i] !== b[i] && b[i][0] !== ':') {
+				return false;
+			}
+		}
+
+		return true;
+	}
 
 	var routes = [];
 
@@ -82,138 +222,6 @@
 		return href && href.indexOf(origin) === 0;
 	}
 
-	var a = document.createElement('a');
-	var QUERYPAIR_REGEX = /^([\w\-]+)(?:=([^&]*))?$/;
-	var HANDLERS = ['beforeenter', 'enter', 'leave'];
-
-	var isInitial = true;
-
-	function RouteData(_ref) {
-		var route = _ref.route;
-		var pathname = _ref.pathname;
-		var params = _ref.params;
-		var query = _ref.query;
-
-		this.pathname = pathname;
-		this.params = params;
-		this.query = query;
-		this.isInitial = isInitial;
-
-		this._route = route;
-
-		isInitial = false;
-	}
-
-	RouteData.prototype = {
-		matches: function matches(href) {
-			return this._route.matches(href);
-		}
-	};
-	function Route(path, options) {
-		var _this = this;
-
-		// strip leading slash
-		if (path[0] === '/') {
-			path = path.slice(1);
-		}
-
-		this.path = path;
-		this.segments = path.split('/');
-
-		if (typeof options === 'function') {
-			options = {
-				enter: options
-			};
-		}
-
-		HANDLERS.forEach(function (handler) {
-			_this[handler] = function (route, other) {
-				var value = undefined;
-
-				if (options[handler]) {
-					value = options[handler](route, other);
-				}
-
-				return roadtrip.Promise.resolve(value);
-			};
-		});
-	}
-
-	Route.prototype = {
-		matches: function matches(href) {
-			a.href = href;
-
-			var pathname = a.pathname.slice(1);
-			var segments = pathname.split('/');
-
-			return segmentsMatch(segments, this.segments);
-		},
-
-		exec: function exec(href) {
-			a.href = href;
-
-			var pathname = a.pathname.slice(1);
-			var search = a.search.slice(1);
-
-			var segments = pathname.split('/');
-
-			if (segments.length !== this.segments.length) {
-				return false;
-			}
-
-			var params = {},
-			    i = undefined;
-
-			for (i = 0; i < segments.length; i += 1) {
-				var segment = segments[i];
-				var toMatch = this.segments[i];
-
-				if (toMatch[0] === ':') {
-					params[toMatch.slice(1)] = segment;
-				} else if (segment !== toMatch) {
-					return false;
-				}
-			}
-
-			var query = {};
-			var queryPairs = search.split('&');
-
-			for (i = 0; i < queryPairs.length; i += 1) {
-				var match = QUERYPAIR_REGEX.exec(queryPairs[i]);
-
-				if (match) {
-					var key = match[1],
-					    value = decodeURIComponent(match[2]);
-
-					if (query.hasOwnProperty(key)) {
-						if (typeof query[key] !== 'object') {
-							query[key] = [query[key]];
-						}
-
-						query[key].push(value);
-					} else {
-						query[key] = value;
-					}
-				}
-			}
-
-			return new RouteData({ route: this, pathname: pathname, params: params, query: query });
-		}
-	};
-
-	function segmentsMatch(a, b) {
-		if (a.length !== b.length) return;
-
-		var i = a.length;
-		while (i--) {
-			if (a[i] !== b[i] && b[i][0] !== ':') {
-				return false;
-			}
-		}
-
-		return true;
-	}
-
 	function isSameRoute(routeA, routeB, dataA, dataB) {
 		if (routeA !== routeB) {
 			return false;
@@ -239,7 +247,7 @@
 			}
 
 			return true;
-		} else if (typeof a === 'object' && typeof b === 'object') {
+		} else if ((typeof a === 'undefined' ? 'undefined' : babelHelpers.typeof(a)) === 'object' && (typeof b === 'undefined' ? 'undefined' : babelHelpers.typeof(b)) === 'object') {
 			var aKeys = Object.keys(a);
 			var bKeys = Object.keys(b);
 
@@ -293,11 +301,9 @@
 			routes.push(new Route(path, options));
 			return roadtrip;
 		},
-
 		start: function start() {
 			return roadtrip.goto(location$1.href, { replaceState: true });
 		},
-
 		goto: function goto(href) {
 			var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
@@ -365,7 +371,7 @@
 			} else {
 				target.fulfil();
 			}
-		})['catch'](target.reject);
+		}).catch(target.reject);
 
 		currentRoute = newRoute;
 		currentData = data;

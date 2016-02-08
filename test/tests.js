@@ -1,25 +1,23 @@
+/*global require, describe, it, __dirname */
 var path = require( 'path' );
 var fs = require( 'fs' );
 var jsdom = require( 'jsdom' );
 var assert = require( 'assert' );
 
 var roadtripSrc = fs.readFileSync( path.resolve( __dirname, '../dist/roadtrip.umd.js' ), 'utf-8' );
-var simulantSrc = fs.readFileSync( path.resolve( __dirname, '../node_modules/simulant/simulant.js' ), 'utf-8' );
+var simulantSrc = fs.readFileSync( require.resolve( 'simulant' ), 'utf-8' );
 
 describe( 'roadtrip', function () {
-	function createTestEnvironment ( html ) {
+	function createTestEnvironment ( initial ) {
 		return new Promise( function ( fulfil, reject ) {
 			jsdom.env({
-				html: html || '',
-				resourceLoader: function ( resource, callback ) {
-					console.log( 'resource', resource );
-				},
+				html: '',
+				url: 'http://roadtrip.com' + ( initial || '' ),
 				src: [ roadtripSrc, simulantSrc ],
 				done: function ( err, window ) {
 					if ( err ) {
 						reject( err );
 					} else {
-						window.location.href = 'http://roadtrip.com';
 						window.Promise = window.roadtrip.Promise = Promise;
 						window.console = console;
 						fulfil( window );
@@ -162,12 +160,10 @@ describe( 'roadtrip', function () {
 		});
 
 		it( 'does not treat navigating to the same route with different params as a noop', function () {
-			return createTestEnvironment().then( function ( window ) {
+			return createTestEnvironment( '/foo' ).then( function ( window ) {
 				var roadtrip = window.roadtrip;
 
 				var left = {};
-
-				window.location.href += 'foo';
 
 				console.log( 'window.location.href', window.location.href );
 
@@ -276,6 +272,6 @@ describe( 'roadtrip', function () {
 
 function wait ( ms ) {
 	return new Promise( function ( fulfil ) {
-		setTimeout( fulfil, ms || 0 );
+		setTimeout( fulfil, ms || 50 );
 	});
 }

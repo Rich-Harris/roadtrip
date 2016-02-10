@@ -1,6 +1,6 @@
 # roadtrip
 
-Roadtrip is a client-side web app routing library that understands it's about the journey, not just the destination. It is (currently) missing basic functionality and probably won't be much use to you. It doesn't even have tests yet! But if you, like me, need a tiny view-agnostic routing library that handles asynchronous route transitions sensibly, read on.
+Roadtrip is a client-side web app routing library that understands it's about the journey, not just the destination. If you, like me, need a tiny view-agnostic routing library that handles asynchronous route transitions sensibly, read on.
 
 ```bash
 npm install roadtrip

@@ -85,6 +85,25 @@ describe( 'roadtrip', function () {
 			});
 		});
 
+		it( 'falls back to a specified route', function () {
+			return createTestEnvironment().then( function ( window ) {
+				var roadtrip = window.roadtrip;
+
+				var enteredFoo;
+
+				roadtrip
+					.add( '/foo', {
+						enter: function () {
+							enteredFoo = true;
+						}
+					});
+
+				return roadtrip.start({ fallback: '/foo' }).then( function () {
+					assert.ok( enteredFoo );
+					window.close();
+				});
+			});
+		});
 	});
 
 	describe( 'roadtrip.goto()', function () {

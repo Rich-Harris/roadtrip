@@ -26,8 +26,12 @@ const roadtrip = {
 		return roadtrip;
 	},
 
-	start () {
-		return roadtrip.goto( location.href, { replaceState: true });
+	start ( options = {} ) {
+		const href = routes.some( route => route.matches( location.href ) ) ?
+			location.href :
+			options.fallback;
+
+		return roadtrip.goto( href, { replaceState: true });
 	},
 
 	goto ( href, options = {} ) {

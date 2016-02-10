@@ -86,7 +86,9 @@ roadtrip
   })
 
   // Calling roadtrip.start() activates the current route
-  .start();
+  .start({
+    fallback: '/' // if the current URL matches no route, use this one
+  });
 ```
 
 ### Asynchronous route transitions

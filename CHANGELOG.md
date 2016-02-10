@@ -1,5 +1,9 @@
 # changelog
 
+## 0.3.0
+
+* Add `fallback` option to `roadtrip.start`
+
 ## 0.2.0
 
 * Create separate UMD and ES6 builds

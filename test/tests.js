@@ -199,6 +199,24 @@ describe( 'roadtrip', () => {
 				});
 			});
 		});
+
+		it( 'differentiates between previous route and current route', () => {
+			return createTestEnvironment( '/foo' ).then( window => {
+				const roadtrip = window.roadtrip;
+
+				roadtrip
+					.add( '/:id', {
+						enter ( route, previousRoute ) {
+							assert.ok( route !== previousRoute );
+						}
+					})
+					.start();
+
+				return roadtrip.goto( '/bar' ).then( () => {
+					window.close();
+				});
+			});
+		});
 	});
 
 	describe( 'route.isInitial', () => {

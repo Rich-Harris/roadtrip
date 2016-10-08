@@ -90,6 +90,10 @@ function _goto ( target ) {
 	])
 		.then( () => newRoute.enter( data, currentData ) )
 		.then( () => {
+			currentRoute = newRoute;
+			currentData = data;
+		})
+		.then( () => {
 			isTransitioning = false;
 
 			// if the user navigated while the transition was taking
@@ -101,9 +105,6 @@ function _goto ( target ) {
 			}
 		})
 		.catch( target.reject );
-
-	currentRoute = newRoute;
-	currentData = data;
 
 	if ( target.popstate ) return;
 	history[ target.options.replaceState ? 'replaceState' : 'pushState' ]( {}, '', target.href );

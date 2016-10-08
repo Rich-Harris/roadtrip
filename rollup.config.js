@@ -1,7 +1,7 @@
-import babel from 'rollup-plugin-babel';
+import buble from 'rollup-plugin-buble';
 
 export default {
 	entry: 'src/roadtrip.js',
-	plugins: [ babel() ],
+	plugins: [ buble() ],
 	moduleName: 'roadtrip'
 };

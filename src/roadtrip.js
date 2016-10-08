@@ -65,11 +65,11 @@ window.addEventListener( 'popstate', () => {
 
 
 function _goto ( target ) {
-	let i, len = routes.length;
-	let newRoute, data;
+	let newRoute;
+	let data;
 
-	for ( i = 0; i < len; i += 1 ) {
-		let route = routes[i];
+	for ( let i = 0; i < routes.length; i += 1 ) {
+		const route = routes[i];
 		data = route.exec( target.href );
 
 		if ( data ) {

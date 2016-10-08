@@ -34,7 +34,7 @@ function deepEqual ( a, b ) {
 		if ( bKeys.length !== i ) return false;
 
 		while ( i-- ) {
-			let key = aKeys[i];
+			const key = aKeys[i];
 
 			if ( !b.hasOwnProperty( key ) || !deepEqual( b[ key ], a[ key ] ) ) {
 				return false;

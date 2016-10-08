@@ -55,8 +55,8 @@ Route.prototype = {
 	matches ( href ) {
 		a.href = href;
 
-		let pathname = a.pathname.slice( 1 );
-		let segments = pathname.split( '/' );
+		const pathname = a.pathname.slice( 1 );
+		const segments = pathname.split( '/' );
 
 		return segmentsMatch( segments, this.segments );
 	},
@@ -64,20 +64,20 @@ Route.prototype = {
 	exec ( href ) {
 		a.href = href;
 
-		let pathname = a.pathname.slice( 1 );
-		let search = a.search.slice( 1 );
+		const pathname = a.pathname.slice( 1 );
+		const search = a.search.slice( 1 );
 
-		let segments = pathname.split( '/' );
+		const segments = pathname.split( '/' );
 
 		if ( segments.length !== this.segments.length ) {
 			return false;
 		}
 
-		let params = {}, i;
+		const params = {};
 
-		for ( i = 0; i < segments.length; i += 1 ) {
-			let segment = segments[i];
-			let toMatch = this.segments[i];
+		for ( let i = 0; i < segments.length; i += 1 ) {
+			const segment = segments[i];
+			const toMatch = this.segments[i];
 
 			if ( toMatch[0] === ':' ) {
 				params[ toMatch.slice( 1 ) ] = segment;
@@ -88,14 +88,15 @@ Route.prototype = {
 			}
 		}
 
-		let query = {};
-		let queryPairs = search.split( '&' );
+		const query = {};
+		const queryPairs = search.split( '&' );
 
-		for ( i = 0; i < queryPairs.length; i += 1 ) {
-			let match = QUERYPAIR_REGEX.exec( queryPairs[i] );
+		for ( let i = 0; i < queryPairs.length; i += 1 ) {
+			const match = QUERYPAIR_REGEX.exec( queryPairs[i] );
 
 			if ( match ) {
-				let key = match[1], value = decodeURIComponent( match[2] );
+				const key = match[1];
+				const value = decodeURIComponent( match[2] );
 
 				if ( query.hasOwnProperty( key ) ) {
 					if ( typeof query[ key ] !== 'object' ) {

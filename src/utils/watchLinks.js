@@ -39,7 +39,7 @@ export default function watchLinks ( callback ) {
 		if ( !sameOrigin( el.href ) ) return;
 
 		// rebuild path
-		var path = el.pathname + el.search + ( el.hash || '' );
+		let path = el.pathname + el.search + ( el.hash || '' );
 
 		// strip leading '/[drive letter]:' on NW.js on Windows
 		if ( typeof process !== 'undefined' && path.match( /^\/[a-zA-Z]:\// ) ) {
@@ -47,7 +47,7 @@ export default function watchLinks ( callback ) {
 		}
 
 		// same page
-		var orig = path;
+		const orig = path;
 
 		if ( path.indexOf( roadtrip.base ) === 0 ) {
 			path = path.substr( roadtrip.base.length );
@@ -63,13 +63,13 @@ export default function watchLinks ( callback ) {
 	}
 }
 
-function which( event ) {
+function which ( event ) {
 	event = event || window.event;
 	return event.which === null ? event.button : event.which;
 }
 
 function sameOrigin ( href ) {
-	var origin = location.protocol + '//' + location.hostname;
+	let origin = location.protocol + '//' + location.hostname;
 	if ( location.port ) origin += ':' + location.port;
 
 	return ( href && ( href.indexOf( origin ) === 0 ) );

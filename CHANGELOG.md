@@ -1,5 +1,9 @@
 # changelog
 
+## 0.3.1
+
+* Ensure `route` and `previousRoute` are differentiated
+
 ## 0.3.0
 
 * Add `fallback` option to `roadtrip.start`

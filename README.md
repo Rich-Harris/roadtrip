@@ -174,7 +174,7 @@ This library assumes your browser supports the HTML5 history API, and Promises. 
 
 ## Building and testing
 
-For testing, roadtrip uses [jsdom](https://github.com/tmpvar/jsdom), which require [node.js](https://nodejs.org/) v4 or later.
+For testing, roadtrip uses [jsdom](https://github.com/tmpvar/jsdom), which requires [node.js](https://nodejs.org/) v4 or later.
 
 To test, run `npm test`. To build to `./dist`, run `npm run build` (this will fail if the tests fail).
 

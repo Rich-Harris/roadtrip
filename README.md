@@ -39,6 +39,11 @@ roadtrip
       	// page the user lands on), `route.isInitial === true`
       	slideInFrom: route.isInitial ? null : 'left'
       });
+
+      // roadtrip captures scroll position on every navigation,
+      // so that you can programmatically scroll to the right
+      // part of the page if the user navigates back/forwards
+      window.scrollTo( route.scrollX, route.scrollY );
     },
 
     leave: function ( route, nextRoute ) {

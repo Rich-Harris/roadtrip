@@ -1,5 +1,9 @@
 # changelog
 
+## 0.3.2
+
+* Capture scroll information on each navigation
+
 ## 0.3.1
 
 * Ensure `route` and `previousRoute` are differentiated

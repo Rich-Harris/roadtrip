@@ -20,10 +20,10 @@
   },
   "scripts": {
     "test": "mocha",
-    "pretest": "npm run build:umd",
+    "pretest": "npm run build",
     "build": "rollup -c",
     "dev": "rollup -c -w",
-    "prepublish": "npm run lint && rm -rf dist && npm test && npm run build:es",
+    "prepublish": "npm run lint && rm -rf dist && npm test",
     "lint": "eslint src"
   },
   "files": [

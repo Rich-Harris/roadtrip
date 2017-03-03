@@ -6,11 +6,12 @@ const HANDLERS = [ 'beforeenter', 'enter', 'leave' ];
 
 let isInitial = true;
 
-function RouteData ({ route, pathname, params, query }) {
+function RouteData ({ route, pathname, params, query, scrollY }) {
 	this.pathname = pathname;
 	this.params = params;
 	this.query = query;
 	this.isInitial = isInitial;
+	this.scrollY = scrollY;
 
 	this._route = route;
 
@@ -61,8 +62,8 @@ Route.prototype = {
 		return segmentsMatch( segments, this.segments );
 	},
 
-	exec ( href ) {
-		a.href = href;
+	exec ( target ) {
+		a.href = target.href;
 
 		const pathname = a.pathname.slice( 1 );
 		const search = a.search.slice( 1 );
@@ -112,7 +113,7 @@ Route.prototype = {
 			}
 		}
 
-		return new RouteData({ route: this, pathname, params, query });
+		return new RouteData({ route: this, pathname, params, query, scrollY: target.scrollY });
 	}
 };
 

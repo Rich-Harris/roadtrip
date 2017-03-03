@@ -17,6 +17,10 @@ let currentRoute = {
 let _target;
 let isTransitioning = false;
 
+const scrollHistory = {};
+let uniqueID = 1;
+let currentID = uniqueID;
+
 const roadtrip = {
 	base: '',
 	Promise: window.Promise,
@@ -31,13 +35,29 @@ const roadtrip = {
 			location.href :
 			options.fallback;
 
-		return roadtrip.goto( href, { replaceState: true });
+		return roadtrip.goto( href, {
+			replaceState: true,
+			scrollX: window.scrollX,
+			scrollY: window.scrollY
+		});
 	},
 
 	goto ( href, options = {} ) {
+		scrollHistory[ currentID ] = {
+			x: window.scrollX,
+			y: window.scrollY
+		};
+
 		let target;
 		const promise = new roadtrip.Promise( ( fulfil, reject ) => {
-			target = _target = { href, options, fulfil, reject };
+			target = _target = {
+				href,
+				scrollX: options.scrollX || 0,
+				scrollY: options.scrollY || 0,
+				options,
+				fulfil,
+				reject
+			};
 		});
 
 		if ( isTransitioning ) {
@@ -52,15 +72,20 @@ const roadtrip = {
 watchLinks( href => roadtrip.goto( href ) );
 
 // watch history
-window.addEventListener( 'popstate', () => {
+window.addEventListener( 'popstate', event => {
+	const scroll = scrollHistory[ event.state.uid ];
+
 	_target = {
 		href: location.href,
+		scrollX: scroll.x,
+		scrollY: scroll.y,
 		popstate: true, // so we know not to manipulate the history
 		fulfil: noop,
 		reject: noop
 	};
 
 	_goto( _target );
+	currentID = event.state.uid;
 }, false );
 
 
@@ -70,7 +95,7 @@ function _goto ( target ) {
 
 	for ( let i = 0; i < routes.length; i += 1 ) {
 		const route = routes[i];
-		data = route.exec( target.href );
+		data = route.exec( target );
 
 		if ( data ) {
 			newRoute = route;
@@ -81,6 +106,11 @@ function _goto ( target ) {
 	if ( !newRoute || isSameRoute( newRoute, currentRoute, data, currentData ) ) {
 		return target.fulfil();
 	}
+
+	scrollHistory[ currentID ] = {
+		x: ( currentData.scrollX = window.scrollX ),
+		y: ( currentData.scrollY = window.scrollY )
+	};
 
 	isTransitioning = true;
 
@@ -107,7 +137,15 @@ function _goto ( target ) {
 		.catch( target.reject );
 
 	if ( target.popstate ) return;
-	history[ target.options.replaceState ? 'replaceState' : 'pushState' ]( {}, '', target.href );
+
+	const uid = target.options.replaceState ? currentID : ++uniqueID;
+	history[ target.options.replaceState ? 'replaceState' : 'pushState' ]( { uid }, '', target.href );
+
+	currentID = uid;
+	scrollHistory[ currentID ] = {
+		x: target.scrollX,
+		y: target.scrollY
+	};
 }
 
 export default roadtrip;

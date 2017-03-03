@@ -4,6 +4,8 @@ const fs = require( 'fs' );
 const jsdom = require( 'jsdom' );
 const assert = require( 'assert' );
 
+require( 'console-group' ).install();
+
 const roadtripSrc = fs.readFileSync( path.resolve( __dirname, '../dist/roadtrip.umd.js' ), 'utf-8' );
 const simulantSrc = fs.readFileSync( require.resolve( 'simulant' ), 'utf-8' );
 
@@ -197,6 +199,37 @@ describe( 'roadtrip', () => {
 					assert.ok( left.foo );
 					window.close();
 				});
+			});
+		});
+
+		it( 'does not treat navigating to the same route with different query params as a noop', () => {
+			return createTestEnvironment( '/foo?a=1' ).then( window => {
+				const roadtrip = window.roadtrip;
+
+				const entered = [];
+				const left = [];
+
+				roadtrip
+					.add( '/foo', {
+						enter ( route ) {
+							entered.push( route.query.a );
+						},
+						leave ( route ) {
+							left.push( route.query.a );
+						}
+					})
+					.start()
+					.then( () => {
+						assert.deepEqual( entered, [ '1' ] );
+						assert.deepEqual( left, [] );
+
+						return roadtrip.goto( '/foo?a=2' );
+					})
+					.then( () => {
+						assert.deepEqual( entered, [ '1', '2' ] );
+						assert.deepEqual( left, [ '1' ] );
+						window.close();
+					});
 			});
 		});
 

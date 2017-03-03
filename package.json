@@ -7,6 +7,7 @@
   "main": "dist/roadtrip.umd.js",
   "jsnext:main": "dist/roadtrip.es.js",
   "devDependencies": {
+    "console-group": "^0.3.3",
     "eslint": "^3.7.1",
     "eslint-plugin-import": "^2.0.0",
     "jsdom": "^9.6.0",

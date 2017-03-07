@@ -6,11 +6,12 @@ const HANDLERS = [ 'beforeenter', 'enter', 'leave' ];
 
 let isInitial = true;
 
-function RouteData ({ route, pathname, params, query, scrollY }) {
+function RouteData ({ route, pathname, params, query, scrollX, scrollY }) {
 	this.pathname = pathname;
 	this.params = params;
 	this.query = query;
 	this.isInitial = isInitial;
+	this.scrollX = scrollX;
 	this.scrollY = scrollY;
 
 	this._route = route;
@@ -113,7 +114,14 @@ Route.prototype = {
 			}
 		}
 
-		return new RouteData({ route: this, pathname, params, query, scrollY: target.scrollY });
+		return new RouteData({
+			route: this,
+			pathname,
+			params,
+			query,
+			scrollX: target.scrollX,
+			scrollY: target.scrollY
+		});
 	}
 };
 

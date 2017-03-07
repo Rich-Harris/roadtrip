@@ -1,5 +1,9 @@
 # changelog
 
+## 0.3.3
+
+* Pass `scrollX` as well as `scrollY`
+
 ## 0.3.2
 
 * Capture scroll information on each navigation

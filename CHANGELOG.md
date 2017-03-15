@@ -1,5 +1,9 @@
 # changelog
 
+## 0.3.4
+
+* Don't try to handle external/hashchange driven popstate events
+
 ## 0.3.3
 
 * Pass `scrollX` as well as `scrollY`

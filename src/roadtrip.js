@@ -73,6 +73,7 @@ watchLinks( href => roadtrip.goto( href ) );
 
 // watch history
 window.addEventListener( 'popstate', event => {
+	if ( !event.state ) return; // hashchange, or otherwise outside roadtrip's control
 	const scroll = scrollHistory[ event.state.uid ];
 
 	_target = {

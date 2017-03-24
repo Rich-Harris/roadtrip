@@ -2,14 +2,15 @@ import roadtrip from './roadtrip.js';
 
 const a = document.createElement( 'a' );
 const QUERYPAIR_REGEX = /^([\w\-]+)(?:=([^&]*))?$/;
-const HANDLERS = [ 'beforeenter', 'enter', 'leave' ];
+const HANDLERS = [ 'beforeenter', 'enter', 'leave', 'update' ];
 
 let isInitial = true;
 
-function RouteData ({ route, pathname, params, query, scrollX, scrollY }) {
+function RouteData ({ route, pathname, params, query, hash, scrollX, scrollY }) {
 	this.pathname = pathname;
 	this.params = params;
 	this.query = query;
+	this.hash = hash;
 	this.isInitial = isInitial;
 	this.scrollX = scrollX;
 	this.scrollY = scrollY;
@@ -39,6 +40,8 @@ export default function Route ( path, options ) {
 			enter: options
 		};
 	}
+
+	this.updateable = typeof options.update === 'function';
 
 	HANDLERS.forEach( handler => {
 		this[ handler ] = ( route, other ) => {
@@ -119,6 +122,7 @@ Route.prototype = {
 			pathname,
 			params,
 			query,
+			hash: a.hash.slice( 1 ),
 			scrollX: target.scrollX,
 			scrollY: target.scrollY
 		});

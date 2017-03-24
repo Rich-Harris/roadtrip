@@ -250,6 +250,62 @@ describe( 'roadtrip', () => {
 				});
 			});
 		});
+
+		it( 'includes the hash', () => {
+			return createTestEnvironment( '/foo#bar' ).then( window => {
+				const roadtrip = window.roadtrip;
+
+				const hashes = [];
+
+				roadtrip
+					.add( '/foo', {
+						enter ( route ) {
+							hashes.push( route.hash );
+						}
+					})
+					.start();
+
+				return roadtrip.start()
+					.then( () => roadtrip.goto( '/foo#baz' ) )
+					.then( () => {
+						assert.deepEqual( hashes, [
+							'bar',
+							'baz'
+						]);
+
+						window.close();
+					});
+			});
+		});
+
+		it( 'updates a route rather than leaving and entering, if applicable', () => {
+			return createTestEnvironment( '/foo' ).then( window => {
+				const roadtrip = window.roadtrip;
+
+				const ids = [];
+
+				roadtrip
+					.add( '/:id', {
+						enter ( route ) {
+							ids.push( route.params.id );
+						},
+
+						update ( route ) {
+							this.enter( route );
+						}
+					})
+					.start();
+
+				return roadtrip.goto( '/bar' ).then( () => {
+					assert.deepEqual( ids, [
+						'foo',
+						'bar'
+					]);
+
+					window.close();
+				});
+			});
+		});
 	});
 
 	describe( 'route.isInitial', () => {

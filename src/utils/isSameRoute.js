@@ -3,7 +3,11 @@ export default function isSameRoute ( routeA, routeB, dataA, dataB ) {
 		return false;
 	}
 
-	return deepEqual( dataA.params, dataB.params ) && deepEqual( dataA.query, dataB.query );
+	return (
+		dataA.hash === dataB.hash &&
+		deepEqual( dataA.params, dataB.params ) &&
+		deepEqual( dataA.query, dataB.query )
+	);
 }
 
 function deepEqual ( a, b ) {

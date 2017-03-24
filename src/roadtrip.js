@@ -92,20 +92,21 @@ window.addEventListener( 'popstate', event => {
 
 function _goto ( target ) {
 	let newRoute;
-	let data;
+	let newData;
 
 	for ( let i = 0; i < routes.length; i += 1 ) {
 		const route = routes[i];
-		data = route.exec( target );
+		newData = route.exec( target );
 
-		if ( data ) {
+		if ( newData ) {
 			newRoute = route;
 			break;
 		}
 	}
 
-	if ( !newRoute || isSameRoute( newRoute, currentRoute, data, currentData ) ) {
-		return target.fulfil();
+	if ( !newRoute || isSameRoute( newRoute, currentRoute, newData, currentData ) ) {
+		target.fulfil();
+		return;
 	}
 
 	scrollHistory[ currentID ] = {
@@ -115,16 +116,22 @@ function _goto ( target ) {
 
 	isTransitioning = true;
 
-	roadtrip.Promise.all([
-		currentRoute.leave( currentData, data ),
-		newRoute.beforeenter( data, currentData )
-	])
-		.then( () => newRoute.enter( data, currentData ) )
+	let promise;
+
+	if ( ( newRoute === currentRoute ) && newRoute.updateable ) {
+		promise = newRoute.update( newData );
+	} else {
+		promise = roadtrip.Promise.all([
+			currentRoute.leave( currentData, newData ),
+			newRoute.beforeenter( newData, currentData )
+		]).then( () => newRoute.enter( newData, currentData ) );
+	}
+
+	promise
 		.then( () => {
 			currentRoute = newRoute;
-			currentData = data;
-		})
-		.then( () => {
+			currentData = newData;
+
 			isTransitioning = false;
 
 			// if the user navigated while the transition was taking

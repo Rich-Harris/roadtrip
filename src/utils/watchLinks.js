@@ -24,10 +24,9 @@ export default function watchLinks ( callback ) {
 		// Ignore if tag has
 		// 1. 'download' attribute
 		// 2. rel='external' attribute
-		if ( el.hasAttribute('download') || el.getAttribute('rel') === 'external' ) return;
+		if ( el.hasAttribute( 'download' ) || el.getAttribute( 'rel' ) === 'external' ) return;
 
 		// ensure non-hash for the same path
-		if ( el.pathname === location.pathname && ( el.hash ) ) return;
 
 		// Check for mailto: in the href
 		if ( ~el.href.indexOf( 'mailto:' ) ) return;

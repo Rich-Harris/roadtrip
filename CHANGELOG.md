@@ -1,5 +1,9 @@
 # changelog
 
+## 0.4.1
+
+* Allow roadtrip to be imported into a Node app (doesn't do anything, but doesn't cause chaos)
+
 ## 0.4.0
 
 * Handle navigation to the same route with a different hash

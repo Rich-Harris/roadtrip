@@ -7,6 +7,7 @@ export default {
 	plugins: [ buble() ],
 	moduleName: 'roadtrip',
 	targets: [
+		{ dest: 'sandbox/roadtrip.js', format: 'umd' }, // useful for testing
 		{ dest: pkg.main, format: 'umd' },
 		{ dest: pkg.module, format: 'es' }
 	]

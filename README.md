@@ -67,6 +67,12 @@ roadtrip
       });
     },
 
+    update: function ( route ) {
+      route.view.set({
+        id: route.params.id
+      });
+    },
+
     leave: function ( route, nextRoute ) {
       route.view.teardown({
       	slideOutTo: nextRoute.matches( '/' ) : 'right' : 'left'

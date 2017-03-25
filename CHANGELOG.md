@@ -1,5 +1,10 @@
 # changelog
 
+## 0.4.0
+
+* Handle navigation to the same route with a different hash
+* Use `update` handlers where applicable
+
 ## 0.3.4
 
 * Don't try to handle external/hashchange driven popstate events

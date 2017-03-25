@@ -1,3 +1,4 @@
+import window from './window.js';
 import roadtrip from '../roadtrip.js';
 import routes from '../routes.js';
 

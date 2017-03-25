@@ -1,10 +1,11 @@
 import Route from './Route.js';
 import watchLinks from './utils/watchLinks.js';
 import isSameRoute from './utils/isSameRoute.js';
+import window from './utils/window.js';
 import routes from './routes.js';
 
 // Enables HTML5-History-API polyfill: https://github.com/devote/HTML5-History-API
-const location = window.history.location || window.location;
+const location = window && ( window.history.location || window.location );
 
 function noop () {}
 
@@ -23,7 +24,7 @@ let currentID = uniqueID;
 
 const roadtrip = {
 	base: '',
-	Promise: window.Promise,
+	Promise,
 
 	add ( path, options ) {
 		routes.push( new Route( path, options ) );
@@ -69,26 +70,27 @@ const roadtrip = {
 	}
 };
 
-watchLinks( href => roadtrip.goto( href ) );
+if ( window ) {
+	watchLinks( href => roadtrip.goto( href ) );
 
-// watch history
-window.addEventListener( 'popstate', event => {
-	if ( !event.state ) return; // hashchange, or otherwise outside roadtrip's control
-	const scroll = scrollHistory[ event.state.uid ];
+	// watch history
+	window.addEventListener( 'popstate', event => {
+		if ( !event.state ) return; // hashchange, or otherwise outside roadtrip's control
+		const scroll = scrollHistory[ event.state.uid ];
 
-	_target = {
-		href: location.href,
-		scrollX: scroll.x,
-		scrollY: scroll.y,
-		popstate: true, // so we know not to manipulate the history
-		fulfil: noop,
-		reject: noop
-	};
+		_target = {
+			href: location.href,
+			scrollX: scroll.x,
+			scrollY: scroll.y,
+			popstate: true, // so we know not to manipulate the history
+			fulfil: noop,
+			reject: noop
+		};
 
-	_goto( _target );
-	currentID = event.state.uid;
-}, false );
-
+		_goto( _target );
+		currentID = event.state.uid;
+	}, false );
+}
 
 function _goto ( target ) {
 	let newRoute;

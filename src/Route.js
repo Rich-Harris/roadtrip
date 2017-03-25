@@ -1,6 +1,6 @@
 import roadtrip from './roadtrip.js';
 
-const a = document.createElement( 'a' );
+const a = typeof document !== 'undefined' && document.createElement( 'a' );
 const QUERYPAIR_REGEX = /^([\w\-]+)(?:=([^&]*))?$/;
 const HANDLERS = [ 'beforeenter', 'enter', 'leave', 'update' ];
 

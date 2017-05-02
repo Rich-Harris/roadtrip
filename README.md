@@ -177,6 +177,12 @@ This will use `history.pushState()` - if you need to use `history.replaceState()
 roadtrip.goto( newUrl, { replaceState: true });
 ```
 
+To redirect to a different route *without* updating the URL, use the `invisible` option:
+
+```js
+roadtrip.goto( '/page/1', { invisible: true });
+```
+
 
 ## Bring your own polyfill
 

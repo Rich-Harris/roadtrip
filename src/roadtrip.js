@@ -61,6 +61,8 @@ const roadtrip = {
 			};
 		});
 
+		_target.promise = promise;
+
 		if ( isTransitioning ) {
 			return promise;
 		}
@@ -140,6 +142,7 @@ function _goto ( target ) {
 			// place, we need to do it all again
 			if ( _target !== target ) {
 				_goto( _target );
+				_target.promise.then( target.fulfil, target.reject );
 			} else {
 				target.fulfil();
 			}
@@ -148,8 +151,10 @@ function _goto ( target ) {
 
 	if ( target.popstate ) return;
 
-	const uid = target.options.replaceState ? currentID : ++uniqueID;
-	history[ target.options.replaceState ? 'replaceState' : 'pushState' ]( { uid }, '', target.href );
+	const { replaceState, invisible } = target.options;
+
+	const uid = replaceState ? currentID : ++uniqueID;
+	history[ replaceState ? 'replaceState' : 'pushState' ]( { uid }, '', invisible ? window.location.href : target.href );
 
 	currentID = uid;
 	scrollHistory[ currentID ] = {

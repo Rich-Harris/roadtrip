@@ -306,6 +306,32 @@ describe( 'roadtrip', () => {
 				});
 			});
 		});
+
+		it( 'updates the route without updating the URL with invisible: true', () => {
+			return createTestEnvironment( '/foo' ).then( window => {
+				const roadtrip = window.roadtrip;
+
+				let enteredBar;
+
+				roadtrip
+					.add( '/foo', {
+						enter () {
+							roadtrip.goto( '/bar', { invisible: true });
+						}
+					})
+					.add( '/bar', {
+						enter () {
+							enteredBar = true;
+						}
+					});
+
+				return roadtrip.start().then( () => {
+					assert.ok( enteredBar );
+					assert.equal( window.location.href, 'http://roadtrip.com/foo' );
+					window.close();
+				});
+			});
+		});
 	});
 
 	describe( 'route.isInitial', () => {

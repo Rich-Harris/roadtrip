@@ -152,9 +152,10 @@ function _goto ( target ) {
 	if ( target.popstate ) return;
 
 	const { replaceState, invisible } = target.options;
+	if ( invisible ) return;
 
 	const uid = replaceState ? currentID : ++uniqueID;
-	history[ replaceState ? 'replaceState' : 'pushState' ]( { uid }, '', invisible ? window.location.href : target.href );
+	history[ replaceState ? 'replaceState' : 'pushState' ]( { uid }, '', target.href );
 
 	currentID = uid;
 	scrollHistory[ currentID ] = {

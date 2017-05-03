@@ -1,5 +1,9 @@
 # changelog
 
+## 0.5.1
+
+* Don't add stack entry for invisible redirects
+
 ## 0.5.0
 
 * Add invisible redirects

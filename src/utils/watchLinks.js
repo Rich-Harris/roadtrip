@@ -16,11 +16,17 @@ export default function watchLinks ( callback ) {
 
 		// ensure target is a link
 		let el = event.target;
-		while ( el && el.nodeName !== 'A' ) {
+
+		// el.nodeName for svg links are 'a' instead of 'A'
+		while ( el && el.nodeName.toUpperCase() !== 'A' ) {
 			el = el.parentNode;
 		}
 
-		if ( !el || el.nodeName !== 'A' ) return;
+		if ( !el || el.nodeName.toUpperCase() !== 'A' ) return;
+
+		// check if link is inside an svg
+		// in this case, both href and target are always inside an object
+		let svg = ( typeof el.href === 'object' ) && el.href.constructor.name === 'SVGAnimatedString';
 
 		// Ignore if tag has
 		// 1. 'download' attribute
@@ -33,13 +39,18 @@ export default function watchLinks ( callback ) {
 		if ( ~el.href.indexOf( 'mailto:' ) ) return;
 
 		// check target
-		if ( el.target ) return;
+		// svg target is an object and its desired value is in .baseVal property
+		if ( svg ? el.target.baseVal : el.target ) return;
 
 		// x-origin
-		if ( !sameOrigin( el.href ) ) return;
+		// note: svg links that are not relative don't call click events (and skip watchLinks)
+		// consequently, all svg links tested inside watchLinks are relative and in the same origin
+		if ( !svg && !sameOrigin( el.href ) ) return;
 
 		// rebuild path
-		let path = el.pathname + el.search + ( el.hash || '' );
+		// There aren't .pathname and .search properties in svg links, so we use href
+		// Also, svg href is an object and its desired value is in .baseVal property
+		let path = svg ? el.href.baseVal : ( el.pathname + el.search + ( el.hash || '' ) );
 
 		// strip leading '/[drive letter]:' on NW.js on Windows
 		if ( typeof process !== 'undefined' && path.match( /^\/[a-zA-Z]:\// ) ) {

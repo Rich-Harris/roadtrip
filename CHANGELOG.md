@@ -1,5 +1,9 @@
 # changelog
 
+## 0.6.0
+
+* Watch SVG links ([#12](https://github.com/Rich-Harris/roadtrip/pull/12))
+
 ## 0.5.1
 
 * Don't add stack entry for invisible redirects

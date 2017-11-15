@@ -26,7 +26,7 @@ export default function watchLinks ( callback ) {
 
 		// check if link is inside an svg
 		// in this case, both href and target are always inside an object
-		let svg = ( typeof el.href === 'object' ) && el.href.constructor.name === 'SVGAnimatedString';
+		const svg = ( typeof el.href === 'object' ) && el.href.constructor.name === 'SVGAnimatedString';
 
 		// Ignore if tag has
 		// 1. 'download' attribute

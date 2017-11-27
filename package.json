@@ -4,6 +4,7 @@
   "author": "Rich Harris",
   "version": "0.6.0",
   "license": "MIT",
+  "repository": "Rich-Harris/roadtrip",
   "main": "dist/roadtrip.umd.js",
   "module": "dist/roadtrip.es.js",
   "jsnext:main": "dist/roadtrip.es.js",

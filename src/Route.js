@@ -60,7 +60,9 @@ Route.prototype = {
 	matches ( href ) {
 		a.href = href;
 
-		const pathname = a.pathname.slice( 1 );
+		const pathname = a.pathname.indexOf( '/' ) === 0 ? 
+			a.pathname.slice( 1 ) :
+			a.pathname;
 		const segments = pathname.split( '/' );
 
 		return segmentsMatch( segments, this.segments );
@@ -69,7 +71,9 @@ Route.prototype = {
 	exec ( target ) {
 		a.href = target.href;
 
-		const pathname = a.pathname.slice( 1 );
+		const pathname = a.pathname.indexOf( '/' ) === 0 ? 
+			a.pathname.slice( 1 ) :
+			a.pathname;
 		const search = a.search.slice( 1 );
 
 		const segments = pathname.split( '/' );

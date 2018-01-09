@@ -1,5 +1,9 @@
 # changelog
 
+## 0.6.1
+
+* Don't strip leading character from pathname if not `/` ([#16](https://github.com/Rich-Harris/roadtrip/issues/16))
+
 ## 0.6.0
 
 * Watch SVG links ([#12](https://github.com/Rich-Harris/roadtrip/pull/12))

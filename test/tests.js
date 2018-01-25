@@ -158,13 +158,11 @@ describe( 'roadtrip', () => {
 			});
 		});
 
-		it( 'treats navigating to the same route as a noop', () => {
-			return createTestEnvironment().then( window => {
+		it( 'does not treat navigating to the same route as a noop', () => {
+			return createTestEnvironment('/foo').then( window => {
 				const roadtrip = window.roadtrip;
 
 				let leftFoo;
-
-				window.location.href += 'foo';
 
 				roadtrip
 					.add( '/foo', {
@@ -175,6 +173,27 @@ describe( 'roadtrip', () => {
 					.start();
 
 				return roadtrip.goto( '/foo' ).then( () => {
+					assert.ok( leftFoo );
+					window.close();
+				});
+			});
+		});
+
+		it( 'treats navigating to the same route as a noop when ignoreSameRoute is set', () => {
+			return createTestEnvironment('/foo').then( window => {
+				const roadtrip = window.roadtrip;
+
+				let leftFoo;
+
+				roadtrip
+					.add( '/foo', {
+						leave () {
+							leftFoo = true;
+						}
+					})
+					.start();
+
+				return roadtrip.goto( '/foo', { ignoreSameRoute: true } ).then( () => {
 					assert.ok( !leftFoo );
 					window.close();
 				});
@@ -296,13 +315,13 @@ describe( 'roadtrip', () => {
 					.start();
 
 				return roadtrip.goto( '/bar' ).then( () => {
-					assert.deepEqual( ids, [
-						'foo',
-						'bar'
-					]);
+						assert.deepEqual( ids, [
+							'foo',
+							'bar'
+						]);
 
-					window.close();
-				});
+						window.close();
+					});
 			});
 		});
 

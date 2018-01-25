@@ -265,8 +265,7 @@ describe( 'roadtrip', () => {
 					})
 					.start();
 
-				return roadtrip.start()
-					.then( () => roadtrip.goto( '/foo#baz' ) )
+				return roadtrip.goto( '/foo#baz' )
 					.then( () => {
 						assert.deepEqual( hashes, [
 							'bar',

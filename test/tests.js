@@ -67,6 +67,23 @@ describe( 'roadtrip', () => {
 			});
 		});
 
+		it( 'does not navigate to the current route if dispatch is false', () => {
+			createTestEnvironment().then( window => {
+				const roadtrip = window.roadtrip;
+
+				return roadtrip
+					.add( '/', {
+						enter () {
+							assert.fail( 'should not dispatch initial route' );
+						}
+					})
+					.start({ dispatch: false })
+					.then( () => {
+						window.close();
+					});
+			});
+		});
+
 		it( 'returns a promise that resolves once the route transition completes', () => {
 			return createTestEnvironment().then( window => {
 				const roadtrip = window.roadtrip;
@@ -265,8 +282,7 @@ describe( 'roadtrip', () => {
 					})
 					.start();
 
-				return roadtrip.start()
-					.then( () => roadtrip.goto( '/foo#baz' ) )
+				return roadtrip.goto( '/foo#baz' )
 					.then( () => {
 						assert.deepEqual( hashes, [
 							'bar',

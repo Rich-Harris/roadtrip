@@ -31,12 +31,15 @@ const roadtrip = {
 		return roadtrip;
 	},
 
-	start ( options = {} ) {
-		const href = routes.some( route => route.matches( location.href ) ) ?
+	start ( { fallback, dispatch, scrollRestoration } = {} ) {
+		const href = !fallback || routes.some( route => route.matches( location.href ) ) ?
 			location.href :
-			options.fallback;
+			fallback;
+
+		_start({ scrollRestoration });
 
 		return roadtrip.goto( href, {
+			dispatch,
 			replaceState: true,
 			scrollX: window.scrollX,
 			scrollY: window.scrollY
@@ -72,26 +75,31 @@ const roadtrip = {
 	}
 };
 
-if ( window ) {
-	watchLinks( href => roadtrip.goto( href ) );
+function _start ( { scrollRestoration = 'manual' } ) {
+	if ( window ) {
+		history.scrollRestoration = scrollRestoration;
 
-	// watch history
-	window.addEventListener( 'popstate', event => {
-		if ( !event.state ) return; // hashchange, or otherwise outside roadtrip's control
-		const scroll = scrollHistory[ event.state.uid ];
+		watchLinks( href => roadtrip.goto( href ) );
 
-		_target = {
-			href: location.href,
-			scrollX: scroll.x,
-			scrollY: scroll.y,
-			popstate: true, // so we know not to manipulate the history
-			fulfil: noop,
-			reject: noop
-		};
+		// watch history
+		window.addEventListener( 'popstate', event => {
+			if ( !event.state ) return; // hashchange, or otherwise outside roadtrip's control
+			const scroll = scrollHistory[ event.state.uid ];
 
-		_goto( _target );
-		currentID = event.state.uid;
-	}, false );
+			_target = {
+				href: location.href,
+				scrollX: scroll.x,
+				scrollY: scroll.y,
+				popstate: true, // so we know not to manipulate the history
+				fulfil: noop,
+				reject: noop,
+				options: {}
+			};
+
+			_goto( _target );
+			currentID = event.state.uid;
+		}, false );
+	}
 }
 
 function _goto ( target ) {
@@ -122,7 +130,9 @@ function _goto ( target ) {
 
 	let promise;
 
-	if ( ( newRoute === currentRoute ) && newRoute.updateable ) {
+	if ( target.options.dispatch === false ) {
+		promise = roadtrip.Promise.resolve();
+	} else if ( ( newRoute === currentRoute ) && newRoute.updateable ) {
 		promise = newRoute.update( newData );
 	} else {
 		promise = roadtrip.Promise.all([

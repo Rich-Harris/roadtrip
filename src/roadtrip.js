@@ -31,12 +31,12 @@ const roadtrip = {
 		return roadtrip;
 	},
 
-	start ( { fallback, dispatch } = {} ) {
+	start ( { fallback, dispatch, scrollRestoration } = {} ) {
 		const href = !fallback || routes.some( route => route.matches( location.href ) ) ?
 			location.href :
 			fallback;
 
-		_start();
+		_start({ scrollRestoration });
 
 		return roadtrip.goto( href, {
 			dispatch,
@@ -75,8 +75,10 @@ const roadtrip = {
 	}
 };
 
-function _start () {
+function _start ( { scrollRestoration = 'manual' } ) {
 	if ( window ) {
+		history.scrollRestoration = scrollRestoration;
+
 		watchLinks( href => roadtrip.goto( href ) );
 
 		// watch history

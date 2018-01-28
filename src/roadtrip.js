@@ -31,7 +31,7 @@ const roadtrip = {
 		return roadtrip;
 	},
 
-	start ( { fallback } = {} ) {
+	start ( { fallback, dispatch } = {} ) {
 		const href = !fallback || routes.some( route => route.matches( location.href ) ) ?
 			location.href :
 			fallback;
@@ -39,6 +39,7 @@ const roadtrip = {
 		_start();
 
 		return roadtrip.goto( href, {
+			dispatch,
 			replaceState: true,
 			scrollX: window.scrollX,
 			scrollY: window.scrollY
@@ -89,7 +90,8 @@ function _start () {
 				scrollY: scroll.y,
 				popstate: true, // so we know not to manipulate the history
 				fulfil: noop,
-				reject: noop
+				reject: noop,
+				options: {}
 			};
 
 			_goto( _target );
@@ -126,7 +128,9 @@ function _goto ( target ) {
 
 	let promise;
 
-	if ( ( newRoute === currentRoute ) && newRoute.updateable ) {
+	if ( target.options.dispatch === false ) {
+		promise = roadtrip.Promise.resolve();
+	} else if ( ( newRoute === currentRoute ) && newRoute.updateable ) {
 		promise = newRoute.update( newData );
 	} else {
 		promise = roadtrip.Promise.all([

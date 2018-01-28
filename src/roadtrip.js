@@ -31,10 +31,12 @@ const roadtrip = {
 		return roadtrip;
 	},
 
-	start ( options = {} ) {
-		const href = routes.some( route => route.matches( location.href ) ) ?
+	start ( { fallback } = {} ) {
+		const href = !fallback || routes.some( route => route.matches( location.href ) ) ?
 			location.href :
-			options.fallback;
+			fallback;
+
+		_start();
 
 		return roadtrip.goto( href, {
 			replaceState: true,
@@ -72,26 +74,28 @@ const roadtrip = {
 	}
 };
 
-if ( window ) {
-	watchLinks( href => roadtrip.goto( href ) );
+function _start () {
+	if ( window ) {
+		watchLinks( href => roadtrip.goto( href ) );
 
-	// watch history
-	window.addEventListener( 'popstate', event => {
-		if ( !event.state ) return; // hashchange, or otherwise outside roadtrip's control
-		const scroll = scrollHistory[ event.state.uid ];
+		// watch history
+		window.addEventListener( 'popstate', event => {
+			if ( !event.state ) return; // hashchange, or otherwise outside roadtrip's control
+			const scroll = scrollHistory[ event.state.uid ];
 
-		_target = {
-			href: location.href,
-			scrollX: scroll.x,
-			scrollY: scroll.y,
-			popstate: true, // so we know not to manipulate the history
-			fulfil: noop,
-			reject: noop
-		};
+			_target = {
+				href: location.href,
+				scrollX: scroll.x,
+				scrollY: scroll.y,
+				popstate: true, // so we know not to manipulate the history
+				fulfil: noop,
+				reject: noop
+			};
 
-		_goto( _target );
-		currentID = event.state.uid;
-	}, false );
+			_goto( _target );
+			currentID = event.state.uid;
+		}, false );
+	}
 }
 
 function _goto ( target ) {

@@ -251,6 +251,38 @@ describe( 'roadtrip', () => {
 			});
 		});
 
+		it( 'handles wildcard routes', () => {
+			return createTestEnvironment( '/foo' ).then( window => {
+				const roadtrip = window.roadtrip;
+
+				let current = null
+
+				const capture = ( name ) => ({
+					enter( route ) {
+						current = `${name}: ${route.pathname}`;
+					}
+				})
+
+				return roadtrip
+					.add( '/foo', capture( 'foo' ) )
+					.add( '/foo/*', capture( 'foo/*' ) )
+					.add( '*', capture( '*' ) )
+					.start()
+					.then( () => {
+						assert.equal( current, 'foo: foo' );
+						return roadtrip.goto( '/foo/bar' );
+					})
+					.then( () => {
+						assert.equal( current, 'foo/*: foo/bar' );
+						return roadtrip.goto( '/baz/foo' );
+					})
+					.then( () => {
+						assert.equal( current, '*: baz/foo' );
+						window.close();
+					})
+			});
+		});
+
 		it( 'includes the hash', () => {
 			return createTestEnvironment( '/foo#bar' ).then( window => {
 				const roadtrip = window.roadtrip;

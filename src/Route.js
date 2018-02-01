@@ -1,7 +1,8 @@
 import roadtrip from './roadtrip.js';
 
 const a = typeof document !== 'undefined' && document.createElement( 'a' );
-const QUERYPAIR_REGEX = /^([\w\-]+)(?:=([^&]*))?$/;
+const QUERYPAIR_REGEX = /^([^=]+)(?:=([^&]*))?$/;
+const QUERYPAIR_SPACE = /\+/g;
 const HANDLERS = [ 'beforeenter', 'enter', 'leave', 'update' ];
 
 let isInitial = true;
@@ -60,10 +61,11 @@ Route.prototype = {
 	matches ( href ) {
 		a.href = href;
 
-		const pathname = a.pathname.indexOf( '/' ) === 0 ? 
+		const pathname = a.pathname.indexOf( '/' ) === 0 ?
 			a.pathname.slice( 1 ) :
 			a.pathname;
-		const segments = pathname.split( '/' );
+		const segments = pathname.split( '/' )
+			.map( segment => decodeURIComponent( segment ) );
 
 		return segmentsMatch( segments, this.segments );
 	},
@@ -71,12 +73,13 @@ Route.prototype = {
 	exec ( target ) {
 		a.href = target.href;
 
-		const pathname = a.pathname.indexOf( '/' ) === 0 ? 
+		const pathname = a.pathname.indexOf( '/' ) === 0 ?
 			a.pathname.slice( 1 ) :
 			a.pathname;
 		const search = a.search.slice( 1 );
 
-		const segments = pathname.split( '/' );
+		const segments = pathname.split( '/' )
+			.map( segment => decodeURIComponent( segment ) );
 
 		if ( segments.length !== this.segments.length ) {
 			return false;
@@ -104,8 +107,10 @@ Route.prototype = {
 			const match = QUERYPAIR_REGEX.exec( queryPairs[i] );
 
 			if ( match ) {
-				const key = match[1];
-				const value = decodeURIComponent( match[2] );
+				const key = decodeURIComponent( match[1] )
+					.replace( QUERYPAIR_SPACE, ' ' );
+				const value = decodeURIComponent( match[2] )
+					.replace( QUERYPAIR_SPACE, ' ' );
 
 				if ( query.hasOwnProperty( key ) ) {
 					if ( typeof query[ key ] !== 'object' ) {

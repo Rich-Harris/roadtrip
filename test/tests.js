@@ -332,6 +332,27 @@ describe( 'roadtrip', () => {
 				});
 			});
 		});
+
+		it( 'handles URLs with encoded characters', () => {
+			return createTestEnvironment( '/bent%C5%8D?caf%C3%A9=b%C3%A9zier+curves' ).then( window => {
+				const roadtrip = window.roadtrip;
+
+				let entered = false;
+
+				roadtrip
+					.add( '/bentō', {
+						enter ( route ) {
+							entered = true;
+							assert.equal( route.query['café'], 'bézier curves' )
+						}
+					});
+
+				return roadtrip.start().then( () => {
+					assert.ok( entered );
+					window.close();
+				});
+			});
+		});
 	});
 
 	describe( 'route.isInitial', () => {

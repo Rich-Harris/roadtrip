@@ -32,6 +32,10 @@ const roadtrip = {
 	},
 
 	start ( options = {} ) {
+		if ( options.renamePopstateEvent ) {
+			renamePopstateEvent( options.renamePopstateEvent )
+		}
+		
 		const href = routes.some( route => route.matches( location.href ) ) ?
 			location.href :
 			options.fallback;
@@ -69,15 +73,22 @@ const roadtrip = {
 
 		_goto( target );
 		return promise;
+	},
+	getCurrentID() {
+		return currentID;
 	}
 };
 
 if ( window ) {
 	watchLinks( href => roadtrip.goto( href ) );
-
 	// watch history
-	window.addEventListener( 'popstate', event => {
-		if ( !event.state ) return; // hashchange, or otherwise outside roadtrip's control
+	window.addEventListener( 'popstate', popstateHandler, false );
+}
+
+function popstateHandler (event) {
+		event = event.detail || event
+		
+		if ( !event.state) return; // hashchange, or otherwise outside roadtrip's control
 		const scroll = scrollHistory[ event.state.uid ];
 
 		_target = {
@@ -91,7 +102,11 @@ if ( window ) {
 
 		_goto( _target );
 		currentID = event.state.uid;
-	}, false );
+}
+
+function renamePopstateEvent ( eventName ) {
+	window.removeEventListener('popstate', popstateHandler, false);
+	window.addEventListener( eventName, popstateHandler, false );
 }
 
 function _goto ( target ) {

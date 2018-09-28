@@ -97,7 +97,8 @@ function popstateHandler (event) {
 			scrollY: scroll.y,
 			popstate: true, // so we know not to manipulate the history
 			fulfil: noop,
-			reject: noop
+			reject: noop,
+			options: {}
 		};
 
 		_goto( _target );
@@ -123,9 +124,16 @@ function _goto ( target ) {
 		}
 	}
 
-	if ( !newRoute || isSameRoute( newRoute, currentRoute, newData, currentData ) ) {
+	const isSame = isSameRoute( newRoute, currentRoute, newData, currentData );
+	const shouldIgnore = target.options.ignoreSameRoute && isSame;
+
+	if ( !newRoute || shouldIgnore ) {
 		target.fulfil();
 		return;
+	}
+
+	if ( !('replaceState' in target.options) ) {
+		target.options.replaceState = isSame;
 	}
 
 	scrollHistory[ currentID ] = {

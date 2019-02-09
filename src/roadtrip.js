@@ -82,8 +82,8 @@ if ( window ) {
 
 		_target = {
 			href: location.href,
-			scrollX: scroll ? scroll.x : 0,
-			scrollY: scroll ? scroll.y : 0,
+			scrollX: (scroll ? scroll.x : 0),
+			scrollY: (scroll ? scroll.y : 0),
 			popstate: true, // so we know not to manipulate the history
 			fulfil: noop,
 			reject: noop

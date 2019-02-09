@@ -33,7 +33,7 @@ const roadtrip = {
 
 	start ( options = {} ) {
 		if ( options.renamePopstateEvent ) {
-			renamePopstateEvent( options.renamePopstateEvent )
+			renamePopstateEvent( options.renamePopstateEvent );
 		}
 		
 		const href = routes.some( route => route.matches( location.href ) ) ?
@@ -74,7 +74,7 @@ const roadtrip = {
 		_goto( target );
 		return promise;
 	},
-	getCurrentID() {
+	getCurrentID () {
 		return currentID;
 	}
 };
@@ -86,22 +86,22 @@ if ( window ) {
 }
 
 function popstateHandler (event) {
-		event = event.detail || event
-		
-		if ( !event.state) return; // hashchange, or otherwise outside roadtrip's control
-		const scroll = scrollHistory[ event.state.uid ];
+	event = event.detail || event;
+	
+	if ( !event.state) return; // hashchange, or otherwise outside roadtrip's control
+	const scroll = scrollHistory[ event.state.uid ];
 
-		_target = {
-			href: location.href,
-			scrollX: (scroll ? scroll.x : 0),
-			scrollY: (scroll ? scroll.y : 0),
-			popstate: true, // so we know not to manipulate the history
-			fulfil: noop,
-			reject: noop
-		};
+	_target = {
+		href: location.href,
+		scrollX: (scroll ? scroll.x : 0),
+		scrollY: (scroll ? scroll.y : 0),
+		popstate: true, // so we know not to manipulate the history
+		fulfil: noop,
+		reject: noop
+	};
 
-		_goto( _target );
-		currentID = event.state.uid;
+	_goto( _target );
+	currentID = event.state.uid;
 }
 
 function renamePopstateEvent ( eventName ) {

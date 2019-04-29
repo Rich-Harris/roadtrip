@@ -1,5 +1,9 @@
 # changelog
 
+## 0.6.2
+
+* `scrollHistory` fallback ([#25](https://github.com/Rich-Harris/roadtrip/issues/25))
+
 ## 0.6.1
 
 * Don't strip leading character from pathname if not `/` ([#16](https://github.com/Rich-Harris/roadtrip/issues/16))

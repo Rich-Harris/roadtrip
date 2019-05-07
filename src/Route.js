@@ -42,6 +42,7 @@ export default function Route ( path, options ) {
 	}
 
 	this.updateable = typeof options.update === 'function';
+	this.hasWildcard = this.segments[ this.segments.length - 1 ][0] === '*';
 
 	HANDLERS.forEach( handler => {
 		this[ handler ] = ( route, other ) => {
@@ -60,25 +61,25 @@ Route.prototype = {
 	matches ( href ) {
 		a.href = href;
 
-		const pathname = a.pathname.indexOf( '/' ) === 0 ? 
+		const pathname = a.pathname.indexOf( '/' ) === 0 ?
 			a.pathname.slice( 1 ) :
 			a.pathname;
 		const segments = pathname.split( '/' );
 
-		return segmentsMatch( segments, this.segments );
+		return segmentsMatch( segments, this.segments, this.hasWildcard );
 	},
 
 	exec ( target ) {
 		a.href = target.href;
 
-		const pathname = a.pathname.indexOf( '/' ) === 0 ? 
+		const pathname = a.pathname.indexOf( '/' ) === 0 ?
 			a.pathname.slice( 1 ) :
 			a.pathname;
 		const search = a.search.slice( 1 );
 
 		const segments = pathname.split( '/' );
 
-		if ( segments.length !== this.segments.length ) {
+		if ( !this.hasWildcard && segments.length !== this.segments.length ) {
 			return false;
 		}
 
@@ -87,9 +88,15 @@ Route.prototype = {
 		for ( let i = 0; i < segments.length; i += 1 ) {
 			const segment = segments[i];
 			const toMatch = this.segments[i];
+			const lastMatchSegment = i === this.segments.length - 1;
 
 			if ( toMatch[0] === ':' ) {
 				params[ toMatch.slice( 1 ) ] = segment;
+			}
+
+			else if ( lastMatchSegment && toMatch[0] === '*' ) {
+				params[ toMatch.slice( 1 ) ] = segments.slice( i ).join( '/' );
+				break;
 			}
 
 			else if ( segment !== toMatch ) {
@@ -133,10 +140,10 @@ Route.prototype = {
 	}
 };
 
-function segmentsMatch ( a, b ) {
-	if ( a.length !== b.length ) return;
+function segmentsMatch ( a, b, wildcard ) {
+	if ( !wildcard && a.length !== b.length ) return;
 
-	let i = a.length;
+	let i = wildcard ? b.length - 1 : a.length;
 	while ( i-- ) {
 		if ( ( a[i] !== b[i] ) && ( b[i][0] !== ':' ) ) {
 			return false;
